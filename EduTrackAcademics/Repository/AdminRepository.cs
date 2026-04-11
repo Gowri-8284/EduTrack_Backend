@@ -33,10 +33,16 @@ namespace EduTrackAcademics.Repository
 			return new { Message = "Qualification added", Id = qualification.QualificationId };
 		}
 
-		public IEnumerable<QualificationResponseDTO> GetAllQualifications()
+		public IEnumerable<QualificationDTO> GetAllQualifications()
 		{
 			return _context.Qualification
-				.Select(q => new QualificationResponseDTO { QualificationName = q.QualificationName })
+				.Select(q => new QualificationDTO { 
+				QualificationName = q.QualificationName,
+				Qualificationsh = q.Qualificationsh,
+				QualificationYears = q.QualificationYears,
+				QualificationDescription = q.QualificationDescription
+
+				})
 				.ToList();
 		}
 
