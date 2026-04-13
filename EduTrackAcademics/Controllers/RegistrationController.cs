@@ -37,7 +37,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		//  Coordinator Registration
-		[Authorize(Roles = "Admin")]
+	[Authorize(Roles = "Admin")]
 		[HttpPost("Coordinator")]
 		public async Task<IActionResult> RegisterCoordinator([FromForm] CoordinatorDTO dto)
 		{

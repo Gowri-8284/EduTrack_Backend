@@ -69,7 +69,7 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-		[Authorize(Roles = "Coordinator,Admin")]		
+	[Authorize(Roles = "Coordinator,Admin")]		
 
 		[HttpGet("program/{programId}/years")]
 
@@ -628,7 +628,7 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-		//[Authorize(Roles = "Coordinator,Admin")]		
+		[Authorize(Roles = "Coordinator,Admin")]		
 
 		//
 
