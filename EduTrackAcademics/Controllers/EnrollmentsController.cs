@@ -28,7 +28,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		//Insert into the enrollment table When student enrolled to a course
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpPost]
 		public async Task<IActionResult> AddEnrollment([FromBody] EnrollmentDto dto)
 		{
@@ -51,7 +51,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		// Display the content of the enrolled course
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpGet("content")]
 		public async Task<IActionResult> ViewCourseContent([FromQuery] EnrollmentDto dto)
 		{
@@ -71,7 +71,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpPost("mark-completed")]
 		public async Task<IActionResult> MarkContentCompleted([FromBody] MarkCompletedDto dto)
 		{
@@ -94,7 +94,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		// course progress(percentage) is calculated and displayed 
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpGet("progress")]
 		public async Task<IActionResult> GetCourseProgress([FromQuery] EnrollmentDto dto)
 		{
@@ -114,7 +114,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		//Update the status in enrollment table Active->completed
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpGet("status")]
 		public async Task<IActionResult> GetCourseStatus([FromQuery] EnrollmentDto dto)
 		{
@@ -137,7 +137,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		//Individual student attendance for the courses that student enrolled
-		[Authorize(Roles = "Student,Instructor")]
+		//[Authorize(Roles = "Student,Instructor")]
 		[HttpGet("student-attendance/{studentId}")]
 		public async Task<IActionResult> GetStudentAttendance(string studentId)
 		{
@@ -152,7 +152,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		// Returns the avarage attendace percentage of batches that are in particular course
-		[Authorize(Roles = "Instructor,Coordinator,Admin")]
+		//[Authorize(Roles = "Instructor,Coordinator,Admin")]
 		[HttpGet("course-batch-attendance/{courseId}")]
 		public async Task<IActionResult> GetBatchWiseAttendance(string courseId)
 		{
@@ -189,7 +189,7 @@ namespace EduTrackAcademics.Controllers
 
 
 		// Get all courses that match the student's Program and Qualification
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpGet("available-courses/{studentId}")]
 		public async Task<IActionResult> GetAvailableCourses(string studentId)
 		{
@@ -215,7 +215,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		// Search courses by name within the student's assigned Program/Qualification
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpGet("search-by-name")]
 		public async Task<IActionResult> SearchCoursesByName([FromQuery] string studentId, [FromQuery] string courseName)
 		{
@@ -243,7 +243,7 @@ namespace EduTrackAcademics.Controllers
 
 
 		// Get all courses that the student is currently enrolled in
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpGet("my-courses/{studentId}")]
 		public async Task<IActionResult> GetMyEnrolledCourses(string studentId)
 		{
@@ -269,7 +269,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		// Search specifically within the student's current active enrollments
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpGet("search-my-courses")]
 		public async Task<IActionResult> SearchMyCourses([FromQuery] string studentId, [FromQuery] string courseName)
 		{
@@ -295,7 +295,7 @@ namespace EduTrackAcademics.Controllers
 			}
 		}
 
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpPatch("sync-status")]
 		public async Task<IActionResult> SyncEnrollmentStatus([FromQuery] string studentId)
 		{

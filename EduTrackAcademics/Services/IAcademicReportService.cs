@@ -6,22 +6,18 @@ using System.Threading.Tasks;
 
 namespace EduTrackAcademics.Services
 
-
 {
 
+    public interface IAcademicReportService
 
-	public interface IAcademicReportService
+    {
 
-	{
+        Task<GetBatchReportDTO> GetBatchReportAsync(string batchId);
+        Task<AcademicReportDTO> GetFullAcademicReportAsync();
+        Task SaveOrUpdateAcademicReportAsync(AcademicReportDTO dto);
 
-		Task<GetBatchReportDTO> GetBatchReportAsync(string batchId);
-
-		Task<AcademicReportDTO> GetFullAcademicReportAsync();
-
-		Task SaveOrUpdateAcademicReportAsync(AcademicReportDTO dto);
-
-
-	}
-
+    }
 
 }
+
+

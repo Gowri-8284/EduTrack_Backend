@@ -34,7 +34,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		// ASSESSMENT
-		[Authorize(Roles = "Instructor")]    
+		//[Authorize(Roles = "Instructor")]    
 		[HttpPost("assessment")]
 
 		public async Task<IActionResult> CreateAssessment([FromBody] AssessmentDTO dto)
@@ -82,7 +82,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
+		//[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
 		[HttpGet("assessmentDetails/{id}")]
 
 		public async Task<IActionResult> GetAssessment(string id)
@@ -90,7 +90,7 @@ namespace EduTrackAcademics.Controllers
 	=> Ok(await _service.GetAssessmentByIdAsync(id));
 
 
-		[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
+	//	[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
 		[HttpGet("assessmentQuestions/{id}")]
 
 		public async Task<IActionResult> GetAllQuestions(string id)
@@ -114,7 +114,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
+	//	[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
 		[HttpGet("assessments/course/{courseId}")]
 
 		public async Task<IActionResult> GetAssessmentsByCourse(string courseId)
@@ -122,7 +122,7 @@ namespace EduTrackAcademics.Controllers
 	=> Ok(await _service.GetAssessmentsByCourseAsync(courseId));
 
 
-		[Authorize(Roles = "Coordinator, Instructor")]    
+		//[Authorize(Roles = "Coordinator, Instructor")]    
 		[HttpPut("assessment/{id}")]
 
 		public async Task<IActionResult> UpdateAssessment(string id, AssessmentDTO dto)
@@ -130,7 +130,7 @@ namespace EduTrackAcademics.Controllers
 	=> Ok(await _service.UpdateAssessmentAsync(id, dto));
 
 
-		[Authorize(Roles = "Admin, Coordinator")]    
+		//[Authorize(Roles = "Admin, Coordinator")]    
 		[HttpDelete("assessment/{id}")]
 
 		public async Task<IActionResult> DeleteAssessment(string id)
@@ -140,7 +140,7 @@ namespace EduTrackAcademics.Controllers
 
 
 		
-		[Authorize(Roles = "Instructor")]    
+		//[Authorize(Roles = "Instructor")]    
 		[HttpPost("question")]
 
 		public async Task<IActionResult> AddQuestion(QuestionDTO dto)
@@ -148,7 +148,7 @@ namespace EduTrackAcademics.Controllers
 	   => Ok(await _service.AddQuestionAsync(dto));
 
 
-		[Authorize(Roles = "Admin, Coordinator, Instructor")]    
+		//[Authorize(Roles = "Admin, Coordinator, Instructor")]    
 		[HttpGet("question/{QuestionId}")]
 
 		public async Task<IActionResult> GetQuestion(string QuestionId)
@@ -156,7 +156,7 @@ namespace EduTrackAcademics.Controllers
 	=> Ok(await _service.GetQuestionByIdAsync(QuestionId));
 
 
-		[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
+	//	[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
 		[HttpGet("questions/assessment/{assessmentId}")]
 
 		public async Task<IActionResult> GetQuestionsByAssessment(string assessmentId)
@@ -164,7 +164,7 @@ namespace EduTrackAcademics.Controllers
 	=> Ok(await _service.GetQuestionsByAssessmentAsync(assessmentId));
 
 
-		[Authorize(Roles = "Coordinator, Instructor")]    
+		//[Authorize(Roles = "Coordinator, Instructor")]    
 		[HttpPut("question/{QuestionId}")]
 
 		public async Task<IActionResult> UpdateQuestion(string QuestionId, QuestionDTO dto)
@@ -172,7 +172,7 @@ namespace EduTrackAcademics.Controllers
 	=> Ok(await _service.UpdateQuestionAsync(QuestionId, dto));
 
 
-		[Authorize(Roles = "Admin, Coordinator")]    
+		//[Authorize(Roles = "Admin, Coordinator")]    
 		[HttpDelete("question/{QuestionId}")]
 
 		public async Task<IActionResult> DeleteQuestion(string QuestionId)

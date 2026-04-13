@@ -21,7 +21,7 @@ namespace EduTrackAcademics.Controllers
 			_service = service;
 		}
 
-		[Authorize(Roles ="Admin")]
+		//[Authorize(Roles ="Admin")]
 		[HttpGet("GetAll-Students")]
 		public async Task<IActionResult> GetAllStudentsAsync()
 		{
@@ -30,7 +30,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(students);
 		}
 
-		[Authorize(Roles ="Student")]
+		//[Authorize(Roles ="Student")]
 		[HttpGet("Personal-Information/{studentId}")]
 		public async Task<IActionResult> GetPersonalInfo(string studentId)
 		{
@@ -38,7 +38,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(result);
 		}
 
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpGet("Program-Details/{studentId}")]
 		public async Task<IActionResult> GetProgramDetails(string studentId)
 		{
@@ -51,7 +51,7 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpPut("Additional-Information/{studentId}")]
 		public async Task<IActionResult> UpdateAdditionalInfo(string studentId, [FromBody] StudentAdditionalDetailsDTO dto)
 		{
@@ -59,7 +59,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(new { Message = "Additional information updated successfully." });
 		}
 
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpGet("Credit-points/{studentId}")]
 		public async Task<IActionResult> GetCreditPoints(string studentId)
 		{
@@ -73,7 +73,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpGet("Assignment-Due")]
 		public async Task<IActionResult> GetAssignmentDue(string studentId, string courseId)
 		{

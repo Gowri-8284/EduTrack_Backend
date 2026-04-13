@@ -5,35 +5,31 @@ public interface IPerformanceRepository
 
 {
 
+    // Task<EnrollmentAverageScoreDTO> GetAverageScoreAsync(string enrollmentId);
 
-	Task<EnrollmentAverageScoreDTO> GetAverageScoreAsync(string enrollmentId);
+    Task<LastUpdatedDTO> GetLastModifiedDateAsync(string enrollmentId);
 
+    Task<List<InstructorBatchDTO>> GetInstructorBatchesAsync(string instructorId);
 
-	Task<LastUpdatedDTO> GetLastModifiedDateAsync(string enrollmentId);
+    Task<GetBatchReportDTO> GetBatchPerformanceAsync(string batchId);
 
+    Task<int> GetPerformanceCountAsync();
 
-	Task<List<InstructorBatchDTO>> GetInstructorBatchesAsync(string instructorId);
+    Task AddPerformanceAsync(Performance performance);
 
+    Task<Performance?> GetLastPerformanceAsync();
 
-	Task<GetBatchReportDTO> GetBatchPerformanceAsync(string batchId);
+    Task<List<CourseBatch>> GetBatchesByInstructor(string instructorId);
+    Task<List<InstructorBatchDTO>> GetAllBatchesAsync();
+    Task<List<BatchCompletionDTO>> GetBatchCompletionByInstructor(string instructorId);
 
+    Task<double> GetCourseProgressPercentageAsync(string studentId, string courseId);
+    Task<List<BatchClassCountDTO>> GetBatchClassCountsByInstructor(string instructorId);
+    Task<List<BatchStartDateDTO>> GetBatchStartDatesAsync();
+    Task DeleteStudentAsync(string enrollmentId);
 
-	Task<int> GetPerformanceCountAsync();
+    Task UpdateStudentAsync(UpdateStudentDTO dto);
 
-
-	Task AddPerformanceAsync(Performance performance);
-
-
-	Task<Performance?> GetLastPerformanceAsync();
-
-	Task<double> GetInstructorCompletionRate(string instrcutorId);
-
-	Task<List<CourseBatch>> GetBatchesByInstructor(string instructorId);
-
-	Task<double> GetCourseProgressPercentageAsync(string studentId, string courseId);
-
-	Task<List<InstructorBatchDTO>> GetAllBatchesAsync();
-
-
+    Task GeneratePerformanceForBatch(string batchId);
 
 }

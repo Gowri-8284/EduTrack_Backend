@@ -47,7 +47,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		[Authorize(Roles = "Coordinator,Admin")]		
+	//	[Authorize(Roles = "Coordinator,Admin")]		
 
 		[HttpGet("programs")]
 
@@ -69,7 +69,7 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-		[Authorize(Roles = "Coordinator,Admin")]		
+	//	[Authorize(Roles = "Coordinator,Admin")]		
 
 		[HttpGet("program/{programId}/years")]
 
@@ -81,7 +81,7 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-		[Authorize(Roles = "Coordinator")]		
+		//[Authorize(Roles = "Coordinator")]		
 
 		[HttpPost("course")]
 
@@ -93,7 +93,7 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-		[Authorize(Roles = "Coordinator")]
+		//[Authorize(Roles = "Coordinator")]
 
 		[HttpPut("course/{id}")]
 
@@ -107,7 +107,7 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-		[Authorize(Roles = "Coordinator")]		
+	//	[Authorize(Roles = "Coordinator")]		
 
 		[HttpDelete("course/{id}")]
 
@@ -121,7 +121,7 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-		[Authorize(Roles = "Coordinator")]		
+		//[Authorize(Roles = "Coordinator")]		
 
 		[HttpGet("academic-year/{yearId}/courses")]
 
@@ -133,7 +133,7 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-		[Authorize(Roles = "Coordinator,Admin")]		
+		//[Authorize(Roles = "Coordinator,Admin")]		
 
 		[HttpGet("students")]
 
@@ -155,7 +155,7 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-		[Authorize(Roles = "Coordinator,Admin")]				
+		//[Authorize(Roles = "Coordinator,Admin")]				
 
 		[HttpGet("instructors")]
 
@@ -267,7 +267,7 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-		[Authorize(Roles = "Coordinator,Admin")]				
+		//[Authorize(Roles = "Coordinator,Admin")]				
 
 		[HttpGet("batches")]
 
@@ -281,7 +281,7 @@ namespace EduTrackAcademics.Controllers
 
 
 		//[HttpGet("batch-count")]//public IActionResult GetBatchCount(string program, int year)//{//	return Ok(_service.GetBatchCount(program, year));//}
-		[Authorize(Roles = "Coordinator,Admin")]	 
+		//[Authorize(Roles = "Coordinator,Admin")]	 
 
 		[HttpGet("batch/{batchId}/students")]
 

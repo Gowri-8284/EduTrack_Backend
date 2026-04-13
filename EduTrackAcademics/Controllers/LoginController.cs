@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Cors;
 namespace EduTrackAcademics.Controllers
 {
 	[ApiController]
-	[Route("api/[controller]")]
+	//[Route("api/[controller]")]
 	[EnableCors("MyCorsPolicy")]
 	public class AuthenticationController : ControllerBase
 	{
