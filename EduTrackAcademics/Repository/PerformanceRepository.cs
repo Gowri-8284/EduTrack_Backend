@@ -819,7 +819,24 @@ namespace EduTrackAcademics.Repository
         }
 
 
-
+        public async Task<double> GetCourseDropoutRateAsync(string courseId)
+        {
+            var enrollments = await _context.Enrollment
+                .Where(e => e.CourseId == courseId)
+                .ToListAsync();
+            int totalStudents = enrollments
+                .Select(e => e.StudentId)
+                .Distinct()
+                .Count();
+            int droppedStudents = enrollments
+                .Where(e => e.Status == "Dropped")
+                .Select(e => e.StudentId)
+                .Distinct()
+                .Count();
+            if (totalStudents == 0)
+                return 0;
+            return (double)droppedStudents / totalStudents * 100;
+        }
 
 
 

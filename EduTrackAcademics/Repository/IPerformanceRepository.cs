@@ -31,5 +31,6 @@ public interface IPerformanceRepository
     Task UpdateStudentAsync(UpdateStudentDTO dto);
 
     Task GeneratePerformanceForBatch(string batchId);
+    Task<double> GetCourseDropoutRateAsync(string courseId);
 
 }

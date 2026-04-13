@@ -317,6 +317,29 @@ namespace EduTrackAcademics.Services
         }
 
 
+        public async Task<double> GetCourseDropoutRateAsync(string courseId)
+        {
+            try
+            {
+                // ✅ Validation
+                if (string.IsNullOrWhiteSpace(courseId))
+                    throw new ArgumentException("CourseId cannot be empty");
+                bool exists = await _context.Course
+                    .AnyAsync(c => c.CourseId == courseId);
+                if (!exists)
+                    throw new KeyNotFoundException($"Course {courseId} not found");
+                // ✅ Get data
+                var rate = await _repo.GetCourseDropoutRateAsync(courseId);
+                // ✅ Logical check
+                if (rate < 0 || rate > 100)
+                    throw new Exception("Invalid dropout rate");
+                return rate;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error while calculating course dropout rate", ex);
+            }
+        }
 
 
 

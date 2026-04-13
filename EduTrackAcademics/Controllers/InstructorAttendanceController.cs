@@ -33,7 +33,7 @@ namespace EduTrackAcademics.Controllers
 
 
 		// ATTENDANCE
-		//[Authorize(Roles = "Instructor")]    
+		[Authorize(Roles = "Instructor")]    
 		[HttpPost("attendance")]
 
 		public async Task<IActionResult> MarkAttendance([FromBody] AttendanceDTO dto)
@@ -85,7 +85,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		//[Authorize(Roles = "Admin, Coordinator, Instructor")]    
+		[Authorize(Roles = "Admin, Coordinator, Instructor")]    
 		[HttpGet("attendance")]
 
 		public async Task<IActionResult> GetAllAttendance()
@@ -101,7 +101,7 @@ namespace EduTrackAcademics.Controllers
 
 
 
-	//	[Authorize(Roles = "Admin, Coordinator, Instructor")]    
+	[Authorize(Roles = "Admin, Coordinator, Instructor")]    
 		[HttpGet("attendance/date/{date}")]
 
 		public async Task<IActionResult> GetAttendanceByDate(DateTime date)
@@ -115,7 +115,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		//[Authorize(Roles = "Admin, Coordinator, Instructor")]    
+		[Authorize(Roles = "Admin, Coordinator, Instructor")]    
 		[HttpGet("attendance/batch/{batchId}")]
 
 		public async Task<IActionResult> GetAttendanceByBatch(string batchId)
@@ -129,7 +129,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		//[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
+		[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
 		[HttpGet("attendance/enrollment/{enrollmentId}")]
 
 		public async Task<IActionResult> GetAttendanceByEnrollment(string enrollmentId)
@@ -143,7 +143,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		//[Authorize(Roles = "Coordinator, Instructor")]    
+		[Authorize(Roles = "Coordinator, Instructor")]    
 		[HttpPut("attendance/{attendanceId}")]
 
 		public async Task<IActionResult> UpdateAttendance(string attendanceId, [FromBody] AttendanceDTO dto)
@@ -196,7 +196,7 @@ namespace EduTrackAcademics.Controllers
 
 
 
-		//[Authorize(Roles = "Admin, Coordinator")]    
+		[Authorize(Roles = "Admin, Coordinator")]    
 		[HttpDelete("attendance/{attendanceId}")]
 
 		public async Task<IActionResult> DeleteAttendance(string attendanceId, [FromQuery] string reason)

@@ -31,7 +31,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		// MODULE
-		//[Authorize(Roles = "Instructor")]    
+		[Authorize(Roles = "Instructor")]    
 		[HttpPost("module")]
 
 		public async Task<IActionResult> CreateModule(ModuleDTO dto)
@@ -61,7 +61,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		///[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
+		[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
 		[HttpGet("modules/{courseId}")]
 
 		public async Task<IActionResult> GetModules(string courseId)
@@ -81,7 +81,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		//[Authorize(Roles = "Coordinator, Instructor")]    
+		[Authorize(Roles = "Coordinator, Instructor")]    
 		[HttpPut("module/{moduleId}")]
 
 		public async Task<IActionResult> UpdateModule(string moduleId, ModuleDTO dto)
@@ -101,7 +101,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		//[Authorize(Roles = "Admin, Coordinator, Instructor")]    
+		[Authorize(Roles = "Admin, Coordinator, Instructor")]    
 		[HttpDelete("module/{moduleId}")]
 
 		public async Task<IActionResult> DeleteModule(string moduleId)
@@ -122,7 +122,7 @@ namespace EduTrackAcademics.Controllers
 
 
 		// CONTENT
-		//[Authorize(Roles = "Instructor")]    
+		[Authorize(Roles = "Instructor")]    
 		[HttpPost("content")]
 
 		public async Task<IActionResult> Create(ContentDTO dto)
@@ -136,7 +136,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		//[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
+		[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
 		[HttpGet("content/module/{moduleId}")]
 
 		public async Task<IActionResult> GetByModule(string moduleId)
@@ -148,7 +148,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		//[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
+		[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
 		[HttpGet("content/{id}")]
 
 		public async Task<IActionResult> GetByID(string id)
@@ -162,7 +162,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		//[Authorize(Roles = "Coordinator, Instructor")]    
+		[Authorize(Roles = "Coordinator, Instructor")]    
 		[HttpPut("content/{id}")]
 
 		public async Task<IActionResult> Update(string id, ContentDTO dto)
@@ -176,7 +176,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		//[Authorize(Roles = "Coordinator, Instructor")]    
+		[Authorize(Roles = "Coordinator, Instructor")]    
 		[HttpPut("content/publish/{id}")]
 
 		public async Task<IActionResult> Publish(string id)
@@ -190,7 +190,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		//[Authorize(Roles = "Admin, Coordinator")]    
+		[Authorize(Roles = "Admin, Coordinator")]    
 		[HttpDelete("content/{id}")]
 
 		public async Task<IActionResult> Delete(string id)

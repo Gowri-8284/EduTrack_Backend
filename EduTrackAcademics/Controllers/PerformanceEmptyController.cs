@@ -187,5 +187,26 @@ namespace EduTrackAcademics.Controllers
                 return NotFound(ex.Message);
             }
         }
+        [HttpGet("course-dropout/{courseId}")]
+        public async Task<IActionResult> GetCourseDropoutRate(string courseId)
+        {
+            try
+            {
+                var result = await _performanceService.GetCourseDropoutRateAsync(courseId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

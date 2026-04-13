@@ -28,6 +28,7 @@ namespace EduTrackAcademics.Services
 
         Task UpdateStudentAsync(UpdateStudentDTO dto);
         Task GeneratePerformanceForBatch(string batchId);
+        Task<double> GetCourseDropoutRateAsync(string courseId);
 
 
 

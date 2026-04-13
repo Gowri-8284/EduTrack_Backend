@@ -28,7 +28,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		//Student can view the assessments that are belong to that particular studnet id
-		//[Authorize(Roles ="Student")]
+		[Authorize(Roles ="Student")]
 		[HttpGet("view-assessments")]
 		public async Task<IActionResult> ViewAssessments([FromQuery] FetchAssessmentDto dto)
 		{
@@ -62,7 +62,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		//Student can able to start the assesment when it is active and questions will be displayed
-	//	[Authorize(Roles = "Student")]
+		[Authorize(Roles = "Student")]
 		[HttpGet("start-assessment")]
 		public async Task<IActionResult> StartAssessment(string studentId, string assessmentId)
 		{
@@ -89,7 +89,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		//Student can answer the questions the answers are stored in the Student answer table
-		//[Authorize(Roles = "Student")]
+		[Authorize(Roles = "Student")]
 		[HttpPost("answer")]
 		public async Task<IActionResult> InsertOrUpdateAnswer(
 		[FromBody] StudentAnswerDto dto)
@@ -104,7 +104,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		//Submit option is to sumbit the assessment for evaluation 
-	//	[Authorize(Roles = "Student")]
+		[Authorize(Roles = "Student")]
 		[HttpPost("submit")]
 		public async Task<IActionResult> SubmitAssessment([FromBody] SubmitAssessmentDto dto)
 		{
@@ -118,7 +118,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		//After submission Feedback column is updated and scores are evaluated
-	//	[Authorize(Roles = "Student")]
+		[Authorize(Roles = "Student")]
 		[HttpPut("UpdateFeedback")]
 		public async Task<IActionResult> UpdateSubmission(SubmitFeedbackDto dto)
 		{
@@ -131,7 +131,7 @@ namespace EduTrackAcademics.Controllers
 			});
 		}
 
-	//	[Authorize(Roles ="Student")]
+		[Authorize(Roles ="Student")]
 		[HttpGet("Score")]
 		public async Task<IActionResult> ViewScoreandUpdateSubmission([FromQuery] string studentId, string assessmentId)
 		{
@@ -145,7 +145,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-	//	[Authorize(Roles = "Instructor,Admin")]
+	[Authorize(Roles = "Instructor,Admin")]
 		[HttpGet("assessment/{assessmentId}")]
 		public async Task<IActionResult> GetAllSubmissions(string assessmentId)
 		{
@@ -167,7 +167,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		// Fetch EVERY submission record in the system
-		//[Authorize(Roles = "Admin,Instructor")]
+		[Authorize(Roles = "Admin,Instructor")]
 		[HttpGet("all-records")]
 		public async Task<IActionResult> GetAllSubmissions()
 		{
