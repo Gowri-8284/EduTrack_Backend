@@ -112,48 +112,61 @@ namespace EduTrackAcademics.Services
 		public async Task<List<StudentCourseAttendanceDto>> CalculateStudentAttendanceByStudentIdAsync(string studentId)
 		{
 			var enrollments = await _repo.GetEnrollmentsByStudentIdAsync(studentId);
-
-			if (enrollments == null || enrollments.Count == 0)
-				return new List<StudentCourseAttendanceDto>();
+			if (enrollments == null || !enrollments.Any()) return new List<StudentCourseAttendanceDto>();
 
 			var result = new List<StudentCourseAttendanceDto>();
 
-			var groupedCourses = enrollments.GroupBy(e => new { e.CourseId, e.Course.CourseName });
-
-			foreach (var group in groupedCourses)
+			foreach (var enrollment in enrollments)
 			{
+				// CHANGE: Get the specific batch the student is assigned to
+				var studentBatch = await _repo.GetStudentSpecificBatchAsync(studentId, enrollment.CourseId);
+
+				// If the student isn't assigned to a batch yet or it has no start date, skip
+				if (studentBatch == null || !studentBatch.LastFilledDate.HasValue)
+					continue;
+
+				// 3. Define the Window based on the specific batch's LastFilledDate
+				DateTime startDate = studentBatch.LastFilledDate.Value;
+				DateTime endDate = startDate.AddDays(enrollment.Course.DurationInWeeks * 7);
+
+				// 4. Get attendance records (linked via EnrollmentID)
+				var attendanceRecords = await _repo.GetStudentAttendanceAsync(enrollment.EnrollmentId);
+
 				int totalSessions = 0;
 				int totalPresent = 0;
 
-				foreach (var enrollment in group)
+				if (attendanceRecords != null && attendanceRecords.Any())
 				{
-					var records = await _repo.GetStudentAttendanceAsync(enrollment.EnrollmentId);
+					// Filter attendance within the course timeframe
+					var validSessions = attendanceRecords
+						.Where(a => a.SessionDate.Date >= startDate.Date && a.SessionDate.Date <= endDate.Date)
+						.ToList();
 
-					if (records != null && records.Count > 0)
-					{
-						totalSessions += records
-							.Select(a => a.SessionDate.Date)
-							.Distinct()
-							.Count();
-
-						totalPresent += records.Count(a => a.Status == "Present");
-					}
+					totalSessions = validSessions.Select(a => a.SessionDate.Date).Distinct().Count();
+					totalPresent = validSessions.Count(a => a.Status == "Present");
 				}
 
-				double percentage = 0;
+				// 5. Calculate Percentage
+				double percentage = totalSessions > 0 ? Math.Round(((double)totalPresent / totalSessions) * 100, 2) : 0;
 
-				if (totalSessions > 0)
+				// 6. Dropped Logic: 75% rule after at least 4 sessions
+				if (totalSessions >= 4 && percentage < 75 && DateTime.Now >= endDate.Date)
 				{
-					percentage = ((double)totalPresent / totalSessions) * 100;
+					await _repo.UpdateEnrollmentStatusAsync(studentId, enrollment.CourseId, "Dropped");
+					enrollment.Status = "Dropped";
 				}
 
 				result.Add(new StudentCourseAttendanceDto
 				{
-					CourseId = group.Key.CourseId,
-					CourseName = group.Key.CourseName,
-					AttendancePercentage = Math.Round(percentage, 2)
+					CourseId = enrollment.CourseId,
+					CourseName = enrollment.Course.CourseName,
+					AttendancePercentage = percentage,
+					StartDate = startDate,
+					EndDate = endDate,
+					Status = enrollment.Status
 				});
 			}
+
 			return result;
 		}
 
@@ -256,19 +269,38 @@ namespace EduTrackAcademics.Services
 
 			foreach (var enrollment in enrollments)
 			{
-				// Calculate if the course duration has expired
-				var deadline = enrollment.EnrollmentDate.AddDays(enrollment.Course.DurationInWeeks * 7);
+				// 1. Find the specific batch assignment for this student/course combination
+				var assignment = await _context.StudentBatchAssignments
+					.Include(sba => sba.CourseBatch)
+					.FirstOrDefaultAsync(sba => sba.StudentId == studentId &&
+											   sba.CourseBatch.CourseId == enrollment.CourseId);
 
-				if (DateTime.Now > deadline)
+				// 2. Extract batch details
+				var batch = assignment?.CourseBatch;
+
+				// 3. Logic: Only calculate deadline if batch exists, is active, and has a start date
+				if (batch != null && batch.IsActive && batch.LastFilledDate.HasValue)
 				{
-					// Check their actual progress percentage
-					double progress = await GetCourseProgressPercentageAsync(studentId, enrollment.CourseId);
+					var deadline = batch.LastFilledDate.Value.AddDays(enrollment.Course.DurationInWeeks * 7);
 
-					if (progress < 100)
+					// 4. Check if current time has surpassed the batch-calculated deadline
+					if (DateTime.Now > deadline)
 					{
-						enrollment.Status = "Dropped";
-						changed = true;
+						double progress = await GetCourseProgressPercentageAsync(studentId, enrollment.CourseId);
+
+						if (progress < 100)
+						{
+							enrollment.Status = "Dropped";
+							changed = true;
+						}
 					}
+				}
+				else
+				{
+					// ELSE BLOCK:
+					// If batch is null, LastFilledDate is null, or IsActive is false:
+					// The student's "clock" hasn't started yet. 
+					// We do nothing (status remains "Active").
 				}
 			}
 

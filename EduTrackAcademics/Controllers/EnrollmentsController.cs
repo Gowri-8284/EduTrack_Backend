@@ -21,10 +21,12 @@ namespace EduTrackAcademics.Controllers
 	public class EnrollmentController : ControllerBase
 	{
 		private readonly IEnrollmentService _service;
+		private readonly EduTrackAcademicsContext _context;
 
-		public EnrollmentController(IEnrollmentService service)
+		public EnrollmentController(IEnrollmentService service, EduTrackAcademicsContext context)
 		{
 			_service = service;
+			_context = context;
 		}
 
 		//Insert into the enrollment table When student enrolled to a course
@@ -122,10 +124,12 @@ namespace EduTrackAcademics.Controllers
 			{
 				var result = await _service.GetCourseStatusAsync(dto.StudentId, dto.CourseId);
 
-				return Ok(new
+				var assignment = await _context.StudentBatchAssignments.Include(sba => sba.CourseBatch).FirstOrDefaultAsync(sba => sba.StudentId == dto.StudentId && sba.CourseBatch.CourseId == dto.CourseId);
+
+				return Ok(new CourseStatusResponse
 				{
-					status = 200,
-					CurrentStatus = result
+					currentStatus = result,
+					isActive = assignment?.CourseBatch?.IsActive ?? false
 				});
 			}
 			catch (ApplicationException ex)

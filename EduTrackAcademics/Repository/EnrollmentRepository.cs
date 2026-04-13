@@ -238,5 +238,16 @@ namespace EduTrackAcademics.Repository
 				.Where(e => e.StudentId == studentId && e.Status == "Active")
 				.ToListAsync();
 		}
+
+		public async Task<CourseBatch> GetStudentSpecificBatchAsync(string studentId, string courseId)
+		{
+			// We look through StudentBatchAssignments to find the one batch 
+			// where this student is assigned for this specific course.
+			var assignment = await _context.StudentBatchAssignments
+				.Include(sba => sba.CourseBatch)
+				.FirstOrDefaultAsync(sba => sba.StudentId == studentId && sba.CourseBatch.CourseId == courseId);
+
+			return assignment?.CourseBatch;
+		}
 	}
 }

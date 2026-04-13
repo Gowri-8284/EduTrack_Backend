@@ -24,7 +24,17 @@ namespace EduTrackAcademics.Services
 			{
 				throw new InvalidOperationException("Student is not enrolled in any courses");
 			}
-			return await _repo.GetAssessmentsByStudentIdAsync(studentId);
+			var assessments = await _repo.GetAssessmentsByStudentIdAsync(studentId);
+
+			if (assessments == null)
+			{
+				return new List<ViewAssessmentDto>();
+			}
+			foreach (var item in assessments)
+			{
+				item.IsSubmitted = await _repo.IsAssessmentSubmittedAsync(studentId, item.AssessmentID);
+			}
+			return assessments;
 		}
 
 		public async Task<List<StartAssessmentDto>> StartAssessmentAsync(string studentId, string assessmentId)
