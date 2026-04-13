@@ -27,6 +27,7 @@ namespace EduTrackAcademics.Repository
 		Task<List<Enrollment>> GetEnrolledCoursesByStudentIdAsync(string studentId);
 		Task<List<Enrollment>> SearchEnrolledCoursesByNameAsync(string studentId, string courseName);
 		Task<List<Enrollment>> GetActiveEnrollmentsWithCourseAsync(string studentId);
+		Task<CourseBatch> GetStudentSpecificBatchAsync(string studentId, string courseId);
 
 
 	}
