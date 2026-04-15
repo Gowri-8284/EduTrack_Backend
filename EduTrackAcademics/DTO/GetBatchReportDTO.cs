@@ -30,5 +30,6 @@ public class GetBatchReportDTO
 	public string InstructorName { get; set; }
 
 	public decimal BatchAverageCompletionPercentage { get; set; }
+	public string CourseId{ get; set; }
 
 }

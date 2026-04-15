@@ -1,4 +1,5 @@
-﻿using EduTrackAcademics.Data;
+﻿
+using EduTrackAcademics.Data;
 
 using EduTrackAcademics.DTO;
 
@@ -9,667 +10,887 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 
+
 namespace EduTrackAcademics.Repository
 
 {
 
-	public class PerformanceRepository : IPerformanceRepository
+    public class PerformanceRepository : IPerformanceRepository
 
-	{
+    {
 
-		private readonly EduTrackAcademicsContext _context;
+        private readonly EduTrackAcademicsContext _context;
 
 
-		public PerformanceRepository(EduTrackAcademicsContext context)
+        public PerformanceRepository(EduTrackAcademicsContext context)
 
-		{
+        {
 
-			_context = context;
-		}
+            _context = context;
 
-		// ✅ COUNT
+        }
 
-		public async Task<int> GetPerformanceCountAsync()
+        // ✅ COUNT
 
-		{
+        public async Task<int> GetPerformanceCountAsync()
 
-			return await _context.Performances.CountAsync();
+        {
 
-		}
+            return await _context.Performances.CountAsync();
 
-		// ✅ ADD
+        }
 
-		public async Task AddPerformanceAsync(Performance performance)
 
-		{
 
-			await _context.Performances.AddAsync(performance);
+        private async Task<string> GenerateProgressId()
 
-			await _context.SaveChangesAsync();
+        {
 
-		}
+            var lastId = await _context.Performances
 
-		// ✅ GET LAST
+                .OrderByDescending(p => p.ProgressID)
 
-		public async Task<Performance?> GetLastPerformanceAsync()
+                .Select(p => p.ProgressID)
 
-		{
+                .FirstOrDefaultAsync();
 
-			return await _context.Performances
+            if (string.IsNullOrEmpty(lastId))
 
-				.OrderByDescending(p => p.LastUpdated)
+                return "P001";
 
-				.FirstOrDefaultAsync();
+            int num = int.Parse(lastId.Substring(1));
 
-		}
+            return "P" + (num + 1).ToString("D3");
 
-		// ✅ CONTENT %
+        }
 
-		public async Task<double> GetCourseProgressPercentageAsync(string studentId, string courseId)
+        // ✅ ADD
 
-		{
+        public async Task AddPerformanceAsync(Performance performance)
 
-			var moduleIds = await _context.Modules
+        {
 
-				.Where(m => m.CourseId == courseId)
+            await _context.Performances.AddAsync(performance);
 
-				.Select(m => m.ModuleID)
+            await _context.SaveChangesAsync();
 
-				.ToListAsync();
+        }
 
-			if (moduleIds.Count == 0)
+        // ✅ GET LAST
 
-				return 0;
+        public async Task<Performance?> GetLastPerformanceAsync()
 
-			var contentIds = await _context.Contents
+        {
 
-				.Where(c => moduleIds.Contains(c.ModuleID))
+            return await _context.Performances
 
-				.Select(c => c.ContentID)
+                .OrderByDescending(p => p.LastUpdated)
 
-				.ToListAsync();
+                .FirstOrDefaultAsync();
 
-			int total = contentIds.Count;
+        }
 
-			if (total == 0)
+        // ✅ CONTENT %
 
-				return 0;
+        public async Task<double> GetCourseProgressPercentageAsync(string studentId, string courseId)
 
-			int completed = await _context.StudentProgress
+        {
 
-				.CountAsync(p =>
+            var moduleIds = await _context.Modules
 
-					p.StudentId == studentId &&
+                .Where(m => m.CourseId == courseId)
 
-					contentIds.Contains(p.ContentId) &&
+                .Select(m => m.ModuleID)
 
-					p.IsCompleted);
+                .ToListAsync();
 
-			double percentage = ((double)completed / total) * 100;
+            if (moduleIds.Count == 0)
 
-			return Math.Round(percentage, 2);
+                return 0;
 
-		}
+            var contentIds = await _context.Contents
 
+                .Where(c => moduleIds.Contains(c.ModuleID))
 
+                .Select(c => c.ContentID)
 
-		// ✅ MAIN (SAVE + UPDATE)
+                .ToListAsync();
 
-		public async Task<EnrollmentAverageScoreDTO> GetAverageScoreAsync(string enrollmentId)
+            int total = contentIds.Count;
 
-		{
+            if (total == 0)
 
-			var enrollment = await _context.Enrollment
+                return 0;
 
-				.Include(e => e.Student)
+            int completed = await _context.StudentProgress
 
-				.Include(e => e.Course)
+                .CountAsync(p =>
 
-				.FirstOrDefaultAsync(e => e.EnrollmentId == enrollmentId);
-			if (enrollment == null)
-			{
-				throw new Exception("Enrollment not found");
-			}
+                    p.StudentId == studentId &&
 
-			if (enrollment == null)
+                    contentIds.Contains(p.ContentId) &&
 
-				throw new Exception("Enrollment not found");
+                    p.IsCompleted);
 
-			var assessmentIds = await _context.Assessments
+            double percentage = ((double)completed / total) * 100;
 
-				.Where(a => a.CourseId == enrollment.CourseId)
+            return Math.Round(percentage, 2);
 
-				.Select(a => a.AssessmentID)
+        }
 
-				.ToListAsync();
+        // ✅ LAST UPDATED (IST)
 
-			var submissions = await _context.Submission
-   .Where(s => s.StudentID == enrollment.StudentId)
-   .ToListAsync();
-			// ASSESSMENT COUNT
+        public async Task<LastUpdatedDTO> GetLastModifiedDateAsync(string enrollmentId)
 
-			int totalAssessments = assessmentIds.Count;
+        {
 
-			int completedAssessments = submissions.Count;
+            var data = await _context.Performances
 
-			double assessmentPercentage = totalAssessments == 0
+                .Include(p => p.Student)
 
-				? 0
+                .Include(p => p.courseBatch)
 
-				: (completedAssessments * 100.0 / totalAssessments);
+                    .ThenInclude(cb => cb.Course)
 
+                .Include(p => p.courseBatch)
 
-			decimal totalScore = submissions.Any() ? submissions.Sum(s => (decimal)s.Score) : 0;
+                    .ThenInclude(cb => cb.Instructor)
 
-			decimal avgScore = submissions.Any() ? submissions.Average(s => (decimal)s.Score) : 0;
+                .Where(p => p.EnrollmentId == enrollmentId)
 
-			double contentPercentage = await GetCourseProgressPercentageAsync(
+                .OrderByDescending(p => p.LastUpdated)
 
-				enrollment.StudentId,
+                .FirstOrDefaultAsync();
 
-				enrollment.CourseId);
+            if (data == null)
 
-			decimal finalPercentage = Math.Round((decimal)contentPercentage, 2);
+            {
 
-			var existing = await _context.Performances
+                return new LastUpdatedDTO
 
-				.FirstOrDefaultAsync(p => p.EnrollmentId == enrollmentId);
+                {
 
-			if (existing != null)
+                    EnrollmentId = enrollmentId,
 
-			{
+                    StudentName = "No Data Found"
 
-				existing.AvgScore = avgScore;
+                };
 
-				existing.CompletionPercentage = finalPercentage;
+            }
 
-				existing.LastUpdated = DateTime.UtcNow;
+            // ✅ IST conversion
 
-				_context.Performances.Update(existing);
+            var ist = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
-			}
+            var time = TimeZoneInfo.ConvertTimeFromUtc(data.LastUpdated, ist);
 
-			else
+            return new LastUpdatedDTO
 
-			{
+            {
 
-				var batch = await _context.CourseBatches
+                EnrollmentId = enrollmentId,
 
-					.FirstOrDefaultAsync(cb => cb.CourseId == enrollment.CourseId);
+                StudentId = data.StudentId,
 
-				await _context.Performances.AddAsync(new Performance
+                StudentName = data.Student?.StudentName,
 
-				{
+                CourseName = data.courseBatch?.Course?.CourseName,
 
-					ProgressID = Guid.NewGuid().ToString(),
+                BatchId = data.BatchId,
 
-					EnrollmentId = enrollmentId,
+                InstructorId = data.courseBatch?.InstructorId,
 
-					StudentId = enrollment.StudentId,
+                LastUpdated = time
 
-					AvgScore = avgScore,
+            };
 
-					CompletionPercentage = finalPercentage,
+        }
 
-					LastUpdated = DateTime.UtcNow,
 
-					BatchId = batch?.BatchId,
+        // ✅ INSTRUCTOR BATCHES
 
-					InstructorId = batch?.InstructorId
+        public async Task<List<InstructorBatchDTO>> GetInstructorBatchesAsync(string instructorId)
 
-				});
+        {
+            return await _context.CourseBatches
 
-			}
+                .Include(cb => cb.Course)
 
-			await _context.SaveChangesAsync();
+                .Include(cb => cb.Instructor) // 🔥 IMPORTANT
 
-			return new EnrollmentAverageScoreDTO
-
-			{
-
-				EnrollmentId = enrollmentId,
-
-				StudentName = enrollment.Student?.StudentName ?? "N/A",
-
-				CourseName = enrollment.Course?.CourseName ?? "N/A",
-
-				TotalScore = totalScore,
-
-				AverageScore = avgScore,
-				CompletionPercentage = finalPercentage,
-				TotalAssessments = totalAssessments,
-				CompletedAssessments = completedAssessments,
-				AssessmentPercentage = assessmentPercentage
-
-			};
-
-		}
-
-		// ✅ LAST UPDATED (IST)
-
-		public async Task<LastUpdatedDTO> GetLastModifiedDateAsync(string enrollmentId)
-
-		{
-
-			var data = await _context.Performances
-
-				.Include(p => p.Student)
-
-				.Include(p => p.courseBatch)
-
-					.ThenInclude(cb => cb.Course)
-
-				.Include(p => p.courseBatch)
-
-					.ThenInclude(cb => cb.Instructor)
-
-				.Where(p => p.EnrollmentId == enrollmentId)
-
-				.OrderByDescending(p => p.LastUpdated)
-
-				.FirstOrDefaultAsync();
-
-			if (data == null)
-
-			{
-
-				return new LastUpdatedDTO
-
-				{
-
-					EnrollmentId = enrollmentId,
-
-					StudentName = "No Data Found"
-
-				};
-
-			}
-
-			// ✅ IST conversion
-
-			var ist = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
-
-			var time = TimeZoneInfo.ConvertTimeFromUtc(data.LastUpdated, ist);
-
-			return new LastUpdatedDTO
-
-			{
-
-				EnrollmentId = enrollmentId,
-
-				StudentId = data.StudentId,
-
-				StudentName = data.Student?.StudentName,
-
-				CourseName = data.courseBatch?.Course?.CourseName,
-
-				BatchId = data.BatchId,
-
-				InstructorId = data.courseBatch?.InstructorId,
-
-				LastUpdated = time
-
-			};
-
-		}
-
-
-		// ✅ INSTRUCTOR BATCHES
-
-		public async Task<List<InstructorBatchDTO>> GetInstructorBatchesAsync(string instructorId)
-
-		{
-
-			return await _context.CourseBatches
-
-				.Include(cb => cb.Course)
-
-				.Include(cb => cb.Instructor) // 🔥 IMPORTANT
-
-				.Where(cb => cb.InstructorId == instructorId)
+                .Where(cb => cb.InstructorId == instructorId)
 .Select(cb => new InstructorBatchDTO
 
 {
 
-	BatchId = cb.BatchId,
+    BatchId = cb.BatchId,
 
-	CourseName = cb.Course.CourseName,
+    CourseName = cb.Course.CourseName,
 
-	StudentCount = _context.StudentBatchAssignments
+    StudentCount = _context.StudentBatchAssignments
 
-		.Count(s => s.BatchId == cb.BatchId),
+        .Count(s => s.BatchId == cb.BatchId),
 
-	InstructorId = cb.Instructor.InstructorId,
+    InstructorId = cb.Instructor.InstructorId,
 
-	InstructorName = cb.Instructor.InstructorName,
+    InstructorName = cb.Instructor.InstructorName,
 
-	InstructorEmail = cb.Instructor.InstructorEmail,
+    InstructorEmail = cb.Instructor.InstructorEmail,
 
-	InstructorPhone = cb.Instructor.InstructorPhone,
+    InstructorPhone = cb.Instructor.InstructorPhone,
 
-	// 🔥 NEW FIELDS
+    // 🔥 NEW FIELDS
 
-	IsActive = cb.IsActive,
+    IsActive = cb.IsActive,
 
-	StartDate = cb.LastFilledDate,
+    StartDate = cb.LastFilledDate,
 
-	EndDate = cb.LastFilledDate != null
+    EndDate = cb.LastFilledDate != null
 
-		? cb.LastFilledDate.Value.AddDays(cb.Course.DurationInWeeks * 7)
+        ? cb.LastFilledDate.Value.AddDays(cb.Course.DurationInWeeks * 7)
 
-		: (DateTime?)null
-
+        : (DateTime?)null
 })
 
+                .ToListAsync();
 
-				.ToListAsync();
+        }
 
-		}
 
+        //// ✅ BATCH REPORT (FULL 🔥)
 
-		//// ✅ BATCH REPORT (FULL 🔥)
 
 
+        public async Task<GetBatchReportDTO> GetBatchPerformanceAsync(string batchId)
 
-		public async Task<GetBatchReportDTO> GetBatchPerformanceAsync(string batchId)
+        {
 
-		{
+            // 🔹 Get Batch
 
-			// 🔹 Get Batch
+            var batch = await _context.CourseBatches
 
-			var batch = await _context.CourseBatches
+                .Include(cb => cb.Course)
 
-				.Include(cb => cb.Course)
+                .Include(cb => cb.Instructor)
 
-				.Include(cb => cb.Instructor)
+                .FirstOrDefaultAsync(cb => cb.BatchId == batchId);
 
-				.FirstOrDefaultAsync(cb => cb.BatchId == batchId);
+            if (batch == null)
 
-			if (batch == null)
+                return null;
 
-				return null;
+            // 🔹 Get Enrollments (by CourseId)
 
-			// 🔹 Get Enrollments (by CourseId)
+            var enrollments = await _context.Enrollment
 
-			var enrollments = await _context.Enrollment
+                .Include(e => e.Student)
 
-				.Include(e => e.Student)
+                .Where(e => e.CourseId == batch.CourseId)
 
-				.Where(e => e.CourseId == batch.CourseId)
+                .ToListAsync();
 
-				.ToListAsync();
+            // 🔹 Remove duplicates
 
-			// 🔹 Remove duplicates
+            var uniqueEnrollments = enrollments
 
-			var uniqueEnrollments = enrollments
+                .GroupBy(e => e.EnrollmentId)
 
-				.GroupBy(e => e.EnrollmentId)
+                .Select(g => g.First())
 
-				.Select(g => g.First())
+                .ToList();
 
-				.ToList();
+            var students = new List<StudentPerformanceDTO>();
 
-			var students = new List<StudentPerformanceDTO>();
+            foreach (var e in uniqueEnrollments)
 
-			foreach (var e in uniqueEnrollments)
+            {
 
-			{
+                // 🔹 Submissions
 
-				// 🔹 Submissions
+                var submissions = await _context.Submission
 
-				var submissions = await _context.Submission
+                    .Where(s => s.StudentID == e.StudentId)
 
-					.Where(s => s.StudentID == e.StudentId)
+                    .ToListAsync();
 
-					.ToListAsync();
+                var totalScore = submissions.Sum(s => s.Score);
 
-				var totalScore = submissions.Sum(s => s.Score);
+                var lastUpdated = submissions
 
-				var lastUpdated = submissions
+                    .OrderByDescending(s => s.SubmissionDate)
 
-					.OrderByDescending(s => s.SubmissionDate)
+                    .Select(s => s.SubmissionDate)
 
-					.Select(s => s.SubmissionDate)
+                    .FirstOrDefault();
 
-					.FirstOrDefault();
 
-				// 🔥 IMPORTANT FIX → completion calculation
-				var completion = await GetCourseProgressPercentageAsync(e.StudentId, batch.CourseId);
 
 
 
+                // 🔥 IMPORTANT FIX → completion calculation
+                var completion = await GetCourseProgressPercentageAsync(e.StudentId, batch.CourseId);
 
 
-				// 🔹 Attendance
 
-				var totalClasses = await _context.Attendances
 
-					.Where(a => a.BatchId == batchId && !a.IsDeleted)
 
-					.Select(a => a.SessionDate.Date)
+                // 🔹 Attendance
 
-					.Distinct()
+                var totalClasses = await _context.Attendances
 
-					.CountAsync();
+                    .Where(a => a.BatchId == batchId && !a.IsDeleted)
 
-				var attended = await _context.Attendances
+                    .Select(a => a.SessionDate.Date)
 
-					.Where(a => a.BatchId == batchId &&
+                    .Distinct()
 
-								a.EnrollmentID == e.EnrollmentId &&
+                    .CountAsync();
 
-								a.Status == "Present" &&
+                var attended = await _context.Attendances
 
-								!a.IsDeleted)
+                    .Where(a => a.BatchId == batchId &&
 
-					.CountAsync();
+                                a.EnrollmentID == e.EnrollmentId &&
 
-				double attendancePercentage = totalClasses == 0
+                                a.Status == "Present" &&
 
-					? 0
+                                !a.IsDeleted)
 
-					: (double)attended / totalClasses * 100;
+                    .CountAsync();
 
-				students.Add(new StudentPerformanceDTO
+                double attendancePercentage = totalClasses == 0
 
-				{
+                    ? 0
 
-					StudentId = e.StudentId,
+                    : (double)attended / totalClasses * 100;
 
-					StudentName = e.Student.StudentName,
+                students.Add(new StudentPerformanceDTO
 
-					CourseName = batch.Course.CourseName,
+                {
 
-					AvgScore = submissions.Count == 0
+                    StudentId = e.StudentId,
 
-						? 0
+                    StudentName = e.Student.StudentName,
 
-						: (decimal)submissions.Average(s => s.Score),
+                    CourseName = batch.Course.CourseName,
 
-					CompletionPercentage = completion, // ✅ FIXED
+                    AvgScore = submissions.Count == 0
 
-					AttendancePercentage = attendancePercentage,
+                        ? 0
 
-					TotalScore = totalScore,
+                        : (decimal)submissions.Average(s => s.Score),
 
-					EnrollmentId = e.EnrollmentId,
+                    CompletionPercentage = completion, // ✅ FIXED
 
-					LastUpdated = lastUpdated
+                    AttendancePercentage = attendancePercentage,
 
-				});
+                    TotalScore = totalScore,
 
-			}
+                    EnrollmentId = e.EnrollmentId,
 
-			// 🔹 Batch Calculations
+                    LastUpdated = lastUpdated
 
-			decimal batchAvgScore = students.Count == 0
+                });
 
-				? 0
+            }
 
-				: students.Average(s => s.AvgScore);
+            // 🔹 Batch Calculations
 
-			double batchAvgAttendance = students.Count == 0
+            decimal batchAvgScore = students.Count == 0
 
-				? 0
+                ? 0
 
-				: students.Average(s => s.AttendancePercentage);
+                : students.Average(s => s.AvgScore);
 
-			double batchAvgCompletion = students.Count == 0
+            double batchAvgAttendance = students.Count == 0
 
-				? 0
+                ? 0
 
-				: students.Average(s => s.CompletionPercentage);
+                : students.Average(s => s.AttendancePercentage);
 
-			var topPerformer = students
+            double batchAvgCompletion = students.Count == 0
 
-				.OrderByDescending(s => s.AvgScore)
+                ? 0
 
-				.FirstOrDefault();
+                : students.Average(s => s.CompletionPercentage);
 
-			int completedStudents = students.Count(s => s.CompletionPercentage == 100);
+            var topPerformer = students
 
-			var batchLastUpdated = students
+                .OrderByDescending(s => s.AvgScore)
 
-				.Where(s => s.LastUpdated != null)
+                .FirstOrDefault();
 
-				.OrderByDescending(s => s.LastUpdated)
+            int completedStudents = students.Count(s => s.CompletionPercentage == 100);
 
-				.Select(s => s.LastUpdated)
+            var batchLastUpdated = students
 
-				.FirstOrDefault();
+                .Where(s => s.LastUpdated != null)
 
-			// 🔹 Final DTO
+                .OrderByDescending(s => s.LastUpdated)
 
-			return new GetBatchReportDTO
+                .Select(s => s.LastUpdated)
 
-			{
+                .FirstOrDefault();
 
-				BatchId = batchId,
+            // 🔹 Final DTO
 
-				CourseName = batch.Course.CourseName,
+            return new GetBatchReportDTO
 
-				InstructorId = batch.InstructorId,
+            {
 
-				InstructorName = batch.Instructor.InstructorName,
+                BatchId = batchId,
 
-				Students = students,
+                CourseName = batch.Course.CourseName,
+                CourseId= batch.CourseId,
 
-				TotalStudents = students.Count,
+                InstructorId = batch.InstructorId,
 
-				BatchAverageScore = Math.Round(batchAvgScore, 2),
+                InstructorName = batch.Instructor.InstructorName,
 
-				BatchAverageAttendance = Math.Round((decimal)batchAvgAttendance, 2),
+                Students = students,
 
-				BatchAverageCompletionPercentage = Math.Round((decimal)batchAvgCompletion, 2),
+                TotalStudents = students.Count,
 
-				TopPerformer = topPerformer?.StudentName,
+                BatchAverageScore = Math.Round(batchAvgScore, 2),
 
-				CompletedStudents = completedStudents,
+                BatchAverageAttendance = Math.Round((decimal)batchAvgAttendance, 2),
 
-				LastUpdated = batchLastUpdated
+                BatchAverageCompletionPercentage = Math.Round((decimal)batchAvgCompletion, 2),
 
-			};
+                TopPerformer = topPerformer?.StudentName,
 
-		}
+                CompletedStudents = completedStudents,
 
+                LastUpdated = batchLastUpdated
 
-		public async Task<double> GetInstructorCompletionRate(string instructorId)
+            };
 
-		{
+        }
 
-			var batches = await _context.CourseBatches
 
-				.Where(cb => cb.InstructorId == instructorId)
+        public async Task<List<BatchCompletionDTO>> GetBatchCompletionByInstructor(string instructorId)
 
-				.ToListAsync();
+        {
 
-			double totalPercentage = 0;
+            var result = new List<BatchCompletionDTO>();
 
-			int studentCount = 0;
+            var batches = await _context.CourseBatches
 
-			foreach (var batch in batches)
+                .Where(b => b.InstructorId == instructorId)
 
-			{
+                .ToListAsync();
 
-				var students = await _context.StudentBatchAssignments
+            foreach (var batch in batches)
 
-					.Where(s => s.BatchId == batch.BatchId)
+            {
 
-					.Select(s => s.StudentId)
+                var students = await _context.StudentBatchAssignments
 
-					.ToListAsync();
+                    .Where(s => s.BatchId == batch.BatchId)
 
-				foreach (var studentId in students)
+                    .Select(s => s.StudentId)
 
-				{
+                    .ToListAsync();
 
-					double progress = await GetCourseProgressPercentageAsync(studentId, batch.CourseId);
+                double total = 0;
 
-					totalPercentage += progress;
+                int count = 0;
 
-					studentCount++;
+                foreach (var studentId in students)
 
-				}
+                {
 
-			}
+                    var progress = await GetCourseProgressPercentageAsync(studentId, batch.CourseId);
 
-			if (studentCount == 0) return 0;
+                    total += progress;
 
-			return Math.Round(totalPercentage / studentCount, 2);
+                    count++;
 
-		}
-		public async Task<List<CourseBatch>> GetBatchesByInstructor(string instructorId)
-		{
-			return await _context.CourseBatches
-				.Where(cb => cb.InstructorId == instructorId)
-				.ToListAsync();
+                }
 
-		}
-		public async Task<List<InstructorBatchDTO>> GetAllBatchesAsync()
+                double completion = count == 0 ? 0 : Math.Round(total / count, 2);
 
-		{
+                result.Add(new BatchCompletionDTO
 
-			return await _context.CourseBatches
+                {
 
-				.Include(cb => cb.Course)
+                    BatchId = batch.BatchId,
 
-				.Include(cb => cb.Instructor)
+                    Completion = completion
 
-				.Select(cb => new InstructorBatchDTO
+                });
 
-				{
+            }
 
-					BatchId = cb.BatchId,
+            return result;
 
-					CourseName = cb.Course.CourseName,
+        }
 
-					StudentCount = _context.StudentBatchAssignments
 
-						.Count(s => s.BatchId == cb.BatchId),
+        public async Task<List<CourseBatch>> GetBatchesByInstructor(string instructorId)
+        {
+            return await _context.CourseBatches
+                .Where(cb => cb.InstructorId == instructorId)
+                .ToListAsync();
 
-					InstructorId = cb.Instructor.InstructorId,
+        }
 
-					InstructorName = cb.Instructor.InstructorName,
+        public async Task<List<InstructorBatchDTO>> GetAllBatchesAsync()
 
-					InstructorEmail = cb.Instructor.InstructorEmail,
+        {
 
-					InstructorPhone = cb.Instructor.InstructorPhone,
+            return await _context.CourseBatches
 
-					IsActive = cb.IsActive,
+                .Include(cb => cb.Course)
 
-					StartDate = cb.LastFilledDate,
+                .Include(cb => cb.Instructor)
 
-					EndDate = cb.LastFilledDate != null
+                .Select(cb => new InstructorBatchDTO
 
-						? cb.LastFilledDate.Value.AddDays(cb.Course.DurationInWeeks * 7)
+                {
 
-						: (DateTime?)null
+                    BatchId = cb.BatchId,
 
-				})
+                    CourseName = cb.Course.CourseName,
 
-				.ToListAsync();
+                    StudentCount = _context.StudentBatchAssignments
 
-		}
+                        .Count(s => s.BatchId == cb.BatchId),
 
-	}
+                    InstructorId = cb.Instructor.InstructorId,
+
+                    InstructorName = cb.Instructor.InstructorName,
+
+                    InstructorEmail = cb.Instructor.InstructorEmail,
+
+                    InstructorPhone = cb.Instructor.InstructorPhone,
+
+                    IsActive = cb.IsActive,
+
+                    StartDate = cb.LastFilledDate,
+
+                    EndDate = cb.LastFilledDate != null
+
+                        ? cb.LastFilledDate.Value.AddDays(cb.Course.DurationInWeeks * 7)
+
+                        : (DateTime?)null
+
+                })
+
+                .ToListAsync();
+
+        }
+        public async Task<List<BatchClassCountDTO>> GetBatchClassCountsByInstructor(string instructorId)
+
+        {
+
+            var result = new List<BatchClassCountDTO>();
+
+            // Step 1: Get all batches of instructor
+
+            var batches = await _context.CourseBatches
+
+                .Where(b => b.InstructorId == instructorId)
+
+                .ToListAsync();
+
+            // Step 2: Loop each batch
+
+            foreach (var batch in batches)
+
+            {
+
+                // Step 3: Count total classes (distinct dates)
+
+                var totalClasses = await _context.Attendances
+
+                    .Where(a => a.BatchId == batch.BatchId && !a.IsDeleted)
+
+                    .Select(a => a.SessionDate.Date)
+
+                    .Distinct()
+
+                    .CountAsync();
+
+                // Step 4: Add to result
+
+                result.Add(new BatchClassCountDTO
+
+                {
+
+                    BatchId = batch.BatchId,
+
+                    TotalClasses = totalClasses
+
+                });
+
+            }
+
+            return result;
+
+        }
+        public async Task<List<BatchStartDateDTO>> GetBatchStartDatesAsync()
+
+        {
+
+            return await _context.CourseBatches
+
+                .Where(b => b.LastFilledDate != null)
+
+                .Select(b => new BatchStartDateDTO
+
+                {
+
+                    BatchId = b.BatchId,
+
+                    StartDate = b.LastFilledDate,
+                    EndDate=b.LastFilledDate.Value.AddDays(b.Course.DurationInWeeks * 7)
+
+                })
+
+                .OrderBy(b => b.StartDate) // sorting here itself
+
+                .ToListAsync();
+
+        }
+        public async Task DeleteStudentAsync(string enrollmentId)
+
+        {
+
+            var enrollment = await _context.Enrollment
+
+                .FirstOrDefaultAsync(e => e.EnrollmentId == enrollmentId);
+
+            if (enrollment == null)
+
+                throw new Exception("Student not found");
+
+            _context.Enrollment.Remove(enrollment);
+
+            await _context.SaveChangesAsync();
+
+        }
+        public async Task UpdateStudentAsync(UpdateStudentDTO dto)
+
+        {
+
+            var enrollment = await _context.Enrollment
+
+                .Include(e => e.Student)
+
+                .FirstOrDefaultAsync(e => e.EnrollmentId == dto.EnrollmentId);
+
+            if (enrollment == null)
+
+                throw new Exception("Student not found");
+
+            // Update student name
+
+            enrollment.Student.StudentName = dto.StudentName;
+
+            // Optional (if course editable)
+
+            enrollment.CourseId = dto.CourseId;
+
+            await _context.SaveChangesAsync();
+
+        }
+
+
+
+
+        //------------------------------
+        public async Task GeneratePerformanceForBatch(string batchId)
+
+        {
+
+            // ✅ Get Batch
+
+            var batch = await _context.CourseBatches
+
+                .FirstOrDefaultAsync(b => b.BatchId == batchId);
+
+            if (batch == null)
+
+                throw new Exception("Batch not found");
+
+            // ✅ Get Enrollments (Course based)
+
+            var enrollments = await _context.Enrollment
+
+                .Include(e => e.Student)
+
+                .Include(e => e.Course)
+
+                .Where(e => e.CourseId == batch.CourseId)
+
+                .ToListAsync();
+
+            if (!enrollments.Any())
+
+                throw new Exception("No enrollments found");
+
+            foreach (var enrollment in enrollments)
+
+            {
+
+                // ✅ Get submissions
+
+                var submissions = await _context.Submission
+
+                    .Where(s => s.StudentID == enrollment.StudentId)
+
+                    .ToListAsync();
+
+                // ✅ Avg Score
+
+                decimal avgScore = submissions.Any()
+
+                    ? submissions.Average(s => (decimal)s.Score)
+
+                    : 0;
+
+                // ✅ Completion %
+
+                double completion = await GetCourseProgressPercentageAsync(
+
+                    enrollment.StudentId,
+
+                    enrollment.CourseId);
+
+                decimal finalCompletion = Math.Round((decimal)completion, 2);
+
+                // ✅ Check existing
+
+                var existing = await _context.Performances
+
+                    .FirstOrDefaultAsync(p => p.EnrollmentId == enrollment.EnrollmentId);
+
+                if (existing != null)
+
+                {
+
+                    existing.AvgScore = avgScore;
+
+                    existing.CompletionPercentage = finalCompletion;
+
+                    existing.LastUpdated = DateTime.UtcNow;
+
+                }
+
+                else
+
+                {
+
+                    // 🔥 Simple safe ID generation
+
+                    var count = await _context.Performances.CountAsync();
+
+                    string progressId = "P" + (count + 1).ToString("D3");
+
+                    await _context.Performances.AddAsync(new Performance
+
+                    {
+
+                        ProgressID = progressId,
+
+                        EnrollmentId = enrollment.EnrollmentId,
+
+                        StudentId = enrollment.StudentId,
+
+                        AvgScore = avgScore,
+
+                        CompletionPercentage = finalCompletion,
+
+                        LastUpdated = DateTime.UtcNow,
+
+                        BatchId = batch.BatchId,
+
+                        InstructorId = batch.InstructorId ?? "I001"
+
+                    });
+
+                }
+
+                // 🔥 IMPORTANT (SAVE EACH TIME)
+
+                await _context.SaveChangesAsync();
+
+            }
+
+        }
+
+
+        public async Task<double> GetCourseDropoutRateAsync(string courseId)
+        {
+            var enrollments = await _context.Enrollment
+                .Where(e => e.CourseId == courseId)
+                .ToListAsync();
+            int totalStudents = enrollments
+                .Select(e => e.StudentId)
+                .Distinct()
+                .Count();
+            int droppedStudents = enrollments
+                .Where(e => e.Status == "Dropped")
+                .Select(e => e.StudentId)
+                .Distinct()
+                .Count();
+            if (totalStudents == 0)
+                return 0;
+            return (double)droppedStudents / totalStudents * 100;
+        }
+        public async Task<StudentAssessmentStatsDTO> GetStudentAssessmentStatsAsync(string studentId, string courseId)
+
+        {
+
+            // Total assessments in that course
+
+            var total = await _context.Assessments
+
+                .Where(a => a.CourseId == courseId)
+
+                .CountAsync();
+
+            // Submitted assessments by student for that course
+
+            var submitted = await (
+
+                from s in _context.Submission
+
+                join a in _context.Assessments
+
+                on s.AssessmentId equals a.AssessmentID
+
+                where s.StudentID == studentId && a.CourseId == courseId
+
+                select s.AssessmentId
+
+            ).Distinct().CountAsync();
+
+            return new StudentAssessmentStatsDTO
+
+            {
+
+                CourseId = courseId,   // 🔥 IMPORTANT
+
+                TotalAssessments = total,
+
+                SubmittedAssessments = submitted,
+
+                PendingAssessments = total - submitted
+
+            };
+
+        }
+
+
+
+
+
+
+
+
+
+
+    }
 }
