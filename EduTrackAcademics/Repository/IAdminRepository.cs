@@ -9,7 +9,7 @@ namespace EduTrackAcademics.Repository
 	{        // 🔹 QUALIFICATIONS
 		object AddQualification(QualificationDTO dto);
 
-		IEnumerable<QualificationResponseDTO> GetAllQualifications();
+		IEnumerable<QualificationDTO> GetAllQualifications();
 
 		object UpdateQualificationByName(string name, QualificationDTO dto);
 

@@ -30,7 +30,7 @@ namespace EduTrackAcademics.AuthFolder
 		    {
 		     new Claim(ClaimTypes.Name, user.Email),
 			new Claim(JwtRegisteredClaimNames.Email, user.Email),
-			new Claim(ClaimTypes.Role, user.Role ?? "User"),
+			new Claim("role", user.Role ?? "User"),
 			new Claim("id", user.UserId.ToString()),
             // NEW: Claim to check if the email was verified through OTP
             new Claim("isVerified", user.IsEmailVerified.ToString().ToLower())

@@ -4,6 +4,7 @@ using EduTrackAcademics.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduTrackAcademics.Migrations
 {
     [DbContext(typeof(EduTrackAcademicsContext))]
-    partial class EduTrackAcademicsContextModelSnapshot : ModelSnapshot
+    [Migration("20260413093346_instructor")]
+    partial class instructor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -550,31 +553,6 @@ namespace EduTrackAcademics.Migrations
                     b.HasKey("NotificationId");
 
                     b.ToTable("Notification");
-                });
-
-            modelBuilder.Entity("EduTrackAcademics.Model.NotificationUserStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("NotificationId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NotificationId");
-
-                    b.ToTable("NotificationUserStatus");
                 });
 
             modelBuilder.Entity("EduTrackAcademics.Model.Performance", b =>
@@ -1154,17 +1132,6 @@ namespace EduTrackAcademics.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
-                });
-
-            modelBuilder.Entity("EduTrackAcademics.Model.NotificationUserStatus", b =>
-                {
-                    b.HasOne("EduTrackAcademics.Model.Notification", "Notification")
-                        .WithMany()
-                        .HasForeignKey("NotificationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Notification");
                 });
 
             modelBuilder.Entity("EduTrackAcademics.Model.Performance", b =>
