@@ -9,5 +9,6 @@
 		public DateTime DueDate { get; set; }
 		public string Status { get; set; }
 		public string CourseName { get; internal set; }
+		public bool IsSubmitted { get; set; }
 	}
 }

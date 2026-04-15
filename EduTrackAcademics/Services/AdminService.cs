@@ -25,7 +25,7 @@ namespace EduTrackAcademics.Services
 
         }
 
-        public IEnumerable<QualificationResponseDTO> GetAllQualification()
+        public IEnumerable<QualificationDTO> GetAllQualification()
 
 		{
 			return _repo.GetAllQualifications();
