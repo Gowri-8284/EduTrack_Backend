@@ -42,7 +42,9 @@ namespace EduTrackAcademics.Controllers
 			return Ok(_service.GetCourse());
 		}
 
-		[Authorize(Roles = "Coordinator,Admin")]
+
+	[Authorize(Roles = "Coordinator,Admin")]		
+
 		[HttpGet("program/{programId}/years")]
 		public IActionResult GetAcademicYears(string programId)
 		{
@@ -460,7 +462,9 @@ namespace EduTrackAcademics.Controllers
 			return config?.BatchSize ?? 2; // default = 2 (your test case)   
 		}
 
-		//[Authorize(Roles = "Coordinator,Admin")]    
+
+		[Authorize(Roles = "Coordinator,Admin")]		
+
 		//
 		[HttpGet("instructor/{instructorId}/batches")]
 
