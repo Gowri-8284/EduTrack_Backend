@@ -63,6 +63,7 @@ namespace EduTrackAcademics.Data
 
 
 		public DbSet<Performance> Performances { get; set; }
+		public DbSet<NotificationUserStatus> NotificationUserStatus { get; set; }
 
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

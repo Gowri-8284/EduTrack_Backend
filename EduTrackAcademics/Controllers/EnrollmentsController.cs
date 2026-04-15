@@ -273,7 +273,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 		// Search specifically within the student's current active enrollments
-		[Authorize(Roles = "Student")]
+	[Authorize(Roles = "Student")]
 		[HttpGet("search-my-courses")]
 		public async Task<IActionResult> SearchMyCourses([FromQuery] string studentId, [FromQuery] string courseName)
 		{
@@ -299,7 +299,7 @@ namespace EduTrackAcademics.Controllers
 			}
 		}
 
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpPatch("sync-status")]
 		public async Task<IActionResult> SyncEnrollmentStatus([FromQuery] string studentId)
 		{

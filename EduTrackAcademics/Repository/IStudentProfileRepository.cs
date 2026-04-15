@@ -10,8 +10,9 @@ namespace EduTrackAcademics.Repository
 			Task<bool> StudentExistsAsync(string studentId);
 			Task UpdateAdditionalInfoAsync(string studentId, StudentAdditionalDetailsDTO dto);
 		    Task<int> GetCreditPointsAsync(string studentId);
-		    Task<(DateTime DueDate, string Type, string CourseName)?> GetAssignmentDetailsAsync(string courseId);
-		    Task<bool> IsStudentEnrolledInCourseAsync(string studentId, string courseId);
+			Task<IEnumerable<(DateTime DueDate, string CourseName, string Status)>> GetStudentAssignmentsAsync(string studentId);
+
+			Task<bool> IsStudentEnrolledInCourseAsync(string studentId, string courseId);
 		   
 
 	}
