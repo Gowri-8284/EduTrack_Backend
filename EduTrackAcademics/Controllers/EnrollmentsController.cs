@@ -299,7 +299,7 @@ namespace EduTrackAcademics.Controllers
 			}
 		}
 
-		[Authorize(Roles = "Student")]
+		//[Authorize(Roles = "Student")]
 		[HttpPatch("sync-status")]
 		public async Task<IActionResult> SyncEnrollmentStatus([FromQuery] string studentId)
 		{

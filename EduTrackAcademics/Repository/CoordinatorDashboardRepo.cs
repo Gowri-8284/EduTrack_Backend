@@ -37,7 +37,9 @@ namespace EduTrackAcademics.Repository
 			.Select(c => new
 			{
 				c.CourseId,
-				c.CourseName
+				c.CourseName,
+				c.Credits,
+				c.DurationInWeeks
 			})
 			.ToList();
 

@@ -11,7 +11,7 @@ namespace EduTrackAcademics.Controllers
 {
 	[ApiController]
 	[Route("api/profile")]
-	[EnableCors("AllowReact")]
+	[EnableCors("MyCorsPolicy")]
 	public class StudentController : ControllerBase
 	{
 		private readonly IStudentProfileService _service;

@@ -83,6 +83,7 @@ builder.Services.AddScoped<IInstructorModuleService, InstructorModuleService>();
 builder.Services.AddScoped<IInstructorModuleRepository, InstructorModuleRepository>();
 builder.Services.AddScoped<IInstructorAttendanceService, InstructorAttendanceService>();
 builder.Services.AddScoped<IInstructorAttendanceRepository, InstructorAttendanceRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 
 
@@ -111,7 +112,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 		   ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
 
-		   ValidAudience = builder.Configuration["JwtSettings:Audience"]
+		   ValidAudience = builder.Configuration["JwtSettings:Audience"],
+		   RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
 
 	   };
 
@@ -160,23 +162,22 @@ config.UseSqlServerStorage(builder.Configuration.GetConnectionString("EduTrackAc
 ); builder.Services.AddHangfireServer();
 
 
-var app = builder.Build(); using (var scope = app.Services.CreateScope())
+var app = builder.Build(); 
 
+
+using (var scope = app.Services.CreateScope())
 {
-
 	var context = scope.ServiceProvider.GetRequiredService<EduTrackAcademicsContext>();
-
 	var admin = context.Users.FirstOrDefault(u => u.Email == "admin@gmail.com");
 
-
 	if (admin != null)
-
 	{
-
-		admin.Password = BCrypt.Net.BCrypt.HashPassword("Admin@123"); // Recompute fresh hashcontext.SaveChanges();
-
+		if (!admin.Password.StartsWith("$2"))
+		{
+			admin.Password = BCrypt.Net.BCrypt.HashPassword("Admin@123");
+			context.SaveChanges();
+		}
 	}
-
 }
 
 // =======================// Middleware// =======================
