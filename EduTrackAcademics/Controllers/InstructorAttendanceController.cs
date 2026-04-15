@@ -81,10 +81,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(result);
 		}
 
-
-
-
-	[Authorize(Roles = "Admin, Coordinator, Instructor")]    
+		[Authorize(Roles = "Instructor")]
 
 		[HttpGet("attendance/date/{date}")]
 		public async Task<IActionResult> GetAttendanceByDate(DateTime date)

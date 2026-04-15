@@ -9,7 +9,7 @@ namespace EduTrackAcademics.Services
 		Task<StudentDTO> GetProgramDetails(string studentId);
 		Task UpdateAdditionalInfo(string studentId, StudentAdditionalDetailsDTO dto);
 		Task<int> GetCreditPointsAsync(string studentId);
-		Task<(DateTime DueDate, string Type, string CourseName)> GetAssignmentDetailsForStudentAsync(string studentId, string courseId);
+		Task<IEnumerable<(DateTime DueDate, string CourseName, string Status)>> GetAssignmentsForStudentAsync(string studentId);
 
 	}
 }
