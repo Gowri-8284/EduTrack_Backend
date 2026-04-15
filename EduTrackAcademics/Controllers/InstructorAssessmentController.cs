@@ -122,7 +122,7 @@ namespace EduTrackAcademics.Controllers
 	=> Ok(await _service.GetAssessmentsByCourseAsync(courseId));
 
 
-		[Authorize(Roles = "Coordinator, Instructor")]    
+		//[Authorize(Roles = "Coordinator, Instructor")]    
 		[HttpPut("assessment/{id}")]
 
 		public async Task<IActionResult> UpdateAssessment(string id, AssessmentDTO dto)

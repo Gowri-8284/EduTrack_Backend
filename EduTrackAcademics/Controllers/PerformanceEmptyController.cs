@@ -1,5 +1,6 @@
 ﻿using EduTrackAcademics.DTO;
 using EduTrackAcademics.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 1. Get total performance count
+        [Authorize(Roles = "instructor,admin,coordinator")]
         [HttpGet("count")]
         public async Task<ActionResult<int>> GetPerformanceCount()
         {
@@ -27,6 +29,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 2. Get last updated details for a specific enrollment
+        [Authorize(Roles = "instructor,admin,coordinator")]
         [HttpGet("last-updated/{enrollmentId}")]
         public async Task<ActionResult<LastUpdatedDTO>> GetLastUpdated(string enrollmentId)
         {
@@ -42,6 +45,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 3. Get all batches assigned to a specific instructor
+        [Authorize(Roles = "instructor,admin,coordinator")]
         [HttpGet("instructor-batches/{instructorId}")]
         public async Task<ActionResult<List<InstructorBatchDTO>>> GetInstructorBatches(string instructorId)
         {
@@ -57,6 +61,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 4. Get a full performance report for a batch
+        [Authorize(Roles = "instructor,admin,coordinator")]
         [HttpGet("batch-report/{batchId}")]
         public async Task<ActionResult<GetBatchReportDTO>> GetBatchReport(string batchId)
         {
@@ -69,6 +74,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 5. Get completion rates for all batches under an instructor
+        [Authorize(Roles = "instructor,admin,coordinator")]
         [HttpGet("instructor-completion/{instructorId}")]
         public async Task<ActionResult<List<BatchCompletionDTO>>> GetInstructorCompletionRate(string instructorId)
         {
@@ -84,6 +90,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 6. Get count and IDs of active (ongoing) batches
+        [Authorize(Roles = "instructor,admin,coordinator")]
         [HttpGet("ongoing-batches/{instructorId}")]
         public async Task<ActionResult<object>> GetOngoingBatches(string instructorId)
         {
@@ -99,6 +106,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 7. Get all batches in the system (Admin View)
+        [Authorize(Roles = "instructor,admin,coordinator")]
         [HttpGet("all-batches")]
         public async Task<ActionResult<List<InstructorBatchDTO>>> GetAllBatches()
         {
@@ -114,6 +122,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 8. Get number of classes conducted per batch
+        [Authorize(Roles = "instructor,admin,coordinator")]
         [HttpGet("class-counts/{instructorId}")]
         public async Task<ActionResult<List<BatchClassCountDTO>>> GetBatchClassCounts(string instructorId)
         {
@@ -129,6 +138,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 9. Get start dates of all batches
+        [Authorize(Roles = "instructor,admin,coordinator")]
         [HttpGet("batch-start-dates")]
         public async Task<ActionResult<List<BatchStartDateDTO>>> GetBatchStartDates()
         {
@@ -144,6 +154,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 10. Trigger performance calculation
+        [Authorize(Roles = "instructor,admin,coordinator")]
         [HttpPost("generate-batch-performance/{batchId}")]
         public async Task<ActionResult<object>> GeneratePerformanceForBatch(string batchId)
         {
@@ -159,6 +170,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 11. Update student enrollment details
+        [Authorize(Roles = "instructor,admin,coordinator")]
         [HttpPut("update-student")]
         public async Task<ActionResult<object>> UpdateStudent([FromBody] UpdateStudentDTO dto)
         {
@@ -174,6 +186,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 12. Delete a student enrollment
+        [Authorize(Roles = "instructor,admin,coordinator")]
         [HttpDelete("delete-student/{enrollmentId}")]
         public async Task<ActionResult<object>> DeleteStudent(string enrollmentId)
         {
@@ -187,13 +200,18 @@ namespace EduTrackAcademics.Controllers
                 return NotFound(ex.Message);
             }
         }
-        [HttpGet("course-dropout/{courseId}")]
+
+        [Authorize(Roles = "instructor,admin,coordinator")]
+        [HttpGet("course-dropout/{courseId}")] 
         public async Task<IActionResult> GetCourseDropoutRate(string courseId)
         {
             try
             {
                 var result = await _performanceService.GetCourseDropoutRateAsync(courseId);
-                return Ok(result);
+
+                // DIRECT 'result' badulu, oka Anonymous Object return cheyi
+                // Deenivalla Frontend lo 'response.data.dropoutRate' ani access cheyochu
+                return Ok(new { dropoutRate = result });
             }
             catch (ArgumentException ex)
             {
@@ -205,8 +223,24 @@ namespace EduTrackAcademics.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                // Internal server error vachina, కనీసం zero pampithe safe
+                return StatusCode(500, new { dropoutRate = 0, message = ex.Message });
             }
         }
+
+        [Authorize(Roles = "instructor,admin,coordinator")]
+        [HttpGet("student-assessment-stats/{studentId}")]
+
+        public async Task<ActionResult> GetStudentAssessmentStats(string studentId)
+
+        {
+
+            var result = await _performanceService.GetStudentAssessmentStatsAsync(studentId);
+
+            return Ok(result);
+
+        }
+
+
     }
 }

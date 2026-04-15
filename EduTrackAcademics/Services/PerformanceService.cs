@@ -340,7 +340,59 @@ namespace EduTrackAcademics.Services
                 throw new ApplicationException("Error while calculating course dropout rate", ex);
             }
         }
+        public async Task<List<StudentAssessmentStatsDTO>> GetStudentAssessmentStatsAsync(string studentId)
 
+        {
+
+            // 🔹 Validation
+
+            if (string.IsNullOrWhiteSpace(studentId))
+
+                throw new ArgumentException("StudentId is required");
+
+            // 🔹 Check student exists
+
+            var studentExists = await _context.Student
+
+                .AnyAsync(s => s.StudentId == studentId);
+
+            if (!studentExists)
+
+                throw new KeyNotFoundException($"Student not found: {studentId}");
+
+            // 🔹 Get ALL courseIds for that student
+
+            var courseIds = await _context.Enrollment
+
+                .Where(e => e.StudentId == studentId)
+
+                .Select(e => e.CourseId)
+
+                .Distinct()
+
+                .ToListAsync();
+
+            if (!courseIds.Any())
+
+                throw new Exception("Student not enrolled in any course");
+
+            // 🔹 Loop and collect stats
+
+            var result = new List<StudentAssessmentStatsDTO>();
+
+            foreach (var courseId in courseIds)
+
+            {
+
+                var data = await _repo.GetStudentAssessmentStatsAsync(studentId, courseId);
+
+                result.Add(data);
+
+            }
+
+            return result;
+
+        }
 
 
 

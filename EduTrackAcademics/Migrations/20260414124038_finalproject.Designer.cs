@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduTrackAcademics.Migrations
 {
     [DbContext(typeof(EduTrackAcademicsContext))]
-    [Migration("20260413065503_education")]
-    partial class education
+    [Migration("20260414124038_finalproject")]
+    partial class finalproject
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

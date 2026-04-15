@@ -51,7 +51,7 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-		[Authorize(Roles = "Student")]
+	[Authorize(Roles = "Student")]
 		[HttpPut("Additional-Information/{studentId}")]
 		public async Task<IActionResult> UpdateAdditionalInfo(string studentId, [FromBody] StudentAdditionalDetailsDTO dto)
 		{

@@ -441,6 +441,7 @@ namespace EduTrackAcademics.Repository
                 BatchId = batchId,
 
                 CourseName = batch.Course.CourseName,
+                CourseId= batch.CourseId,
 
                 InstructorId = batch.InstructorId,
 
@@ -642,7 +643,8 @@ namespace EduTrackAcademics.Repository
 
                     BatchId = b.BatchId,
 
-                    StartDate = b.LastFilledDate
+                    StartDate = b.LastFilledDate,
+                    EndDate=b.LastFilledDate.Value.AddDays(b.Course.DurationInWeeks * 7)
 
                 })
 
@@ -837,6 +839,51 @@ namespace EduTrackAcademics.Repository
                 return 0;
             return (double)droppedStudents / totalStudents * 100;
         }
+        public async Task<StudentAssessmentStatsDTO> GetStudentAssessmentStatsAsync(string studentId, string courseId)
+
+        {
+
+            // Total assessments in that course
+
+            var total = await _context.Assessments
+
+                .Where(a => a.CourseId == courseId)
+
+                .CountAsync();
+
+            // Submitted assessments by student for that course
+
+            var submitted = await (
+
+                from s in _context.Submission
+
+                join a in _context.Assessments
+
+                on s.AssessmentId equals a.AssessmentID
+
+                where s.StudentID == studentId && a.CourseId == courseId
+
+                select s.AssessmentId
+
+            ).Distinct().CountAsync();
+
+            return new StudentAssessmentStatsDTO
+
+            {
+
+                CourseId = courseId,   // 🔥 IMPORTANT
+
+                TotalAssessments = total,
+
+                SubmittedAssessments = submitted,
+
+                PendingAssessments = total - submitted
+
+            };
+
+        }
+
+
 
 
 
