@@ -55,6 +55,7 @@ namespace EduTrackAcademics.Controllers
 			if (token == null)
 				return Unauthorized(new { Message = "Invalid email or password." });
 
+
 			return Ok(new { Token = token });
 		}
 
