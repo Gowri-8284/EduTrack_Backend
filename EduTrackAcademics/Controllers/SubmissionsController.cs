@@ -145,7 +145,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		[Authorize(Roles = "Instructor,Admin")]
+	[Authorize(Roles = "Instructor,Admin")]
 		[HttpGet("assessment/{assessmentId}")]
 		public async Task<IActionResult> GetAllSubmissions(string assessmentId)
 		{

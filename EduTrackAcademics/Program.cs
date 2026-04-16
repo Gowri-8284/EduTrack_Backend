@@ -83,6 +83,7 @@ builder.Services.AddScoped<IInstructorModuleService, InstructorModuleService>();
 builder.Services.AddScoped<IInstructorModuleRepository, InstructorModuleRepository>();
 builder.Services.AddScoped<IInstructorAttendanceService, InstructorAttendanceService>();
 builder.Services.AddScoped<IInstructorAttendanceRepository, InstructorAttendanceRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 
 

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrackAcademics.Model
-
+//THE ONE I DID NOW
 {
 
 	public class Performance

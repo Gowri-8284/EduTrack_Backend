@@ -49,6 +49,24 @@ namespace EduTrackAcademics.Services
 				throw new StudentNotFoundException("Student not found");
 			await _repo.UpdateAdditionalInfoAsync(studentId, dto);
 		}
+		public async Task<StudentAdditionalDetailsDTO> GetAdditionalInfoAsync(string studentId)
+		{
+			// Check if student exists first using your existing repo method
+			if (!await _repo.StudentExistsAsync(studentId))
+			{
+				throw new StudentNotFoundException($"Student with ID {studentId} not found.");
+			}
+
+			var details = await _repo.GetAdditionalInfoAsync(studentId);
+
+			if (details == null)
+			{
+				// Return an empty DTO or throw exception based on your preference
+				throw new StudentNotFoundException("Additional details have not been filled for this student.");
+			}
+
+			return details;
+		}
 
 		public async Task<int> GetCreditPointsAsync(string studentId)
 		{
@@ -68,21 +86,17 @@ namespace EduTrackAcademics.Services
 
 
 		// to get assignment due
-		public async Task<(DateTime DueDate, string Type, string CourseName)> GetAssignmentDetailsForStudentAsync(string studentId, string courseId)
+		public async Task<IEnumerable<(DateTime DueDate, string CourseName, string Status)>> GetAssignmentsForStudentAsync(string studentId)
 		{
-			// Validate enrollment
-			if (!await _repo.IsStudentEnrolledInCourseAsync(studentId, courseId))
-			{
-				throw new ArgumentException($"Student {studentId} is not enrolled in course {courseId}.");
-			} // Fetch assignment details
+			var assignments = await _repo.GetStudentAssignmentsAsync(studentId);
 
-			var assignment = await _repo.GetAssignmentDetailsAsync(courseId);
-
-			if (assignment == null)
+			if (assignments == null || !assignments.Any())
 			{
-				throw new InvalidOperationException($"No assignment found for course {courseId}.");
+				// Return empty list or throw exception based on your frontend preference
+				return Enumerable.Empty<(DateTime, string, string)>();
 			}
-			return assignment.Value;
+
+			return assignments;
 		}
 
 	}
