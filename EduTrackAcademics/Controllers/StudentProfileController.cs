@@ -33,7 +33,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(students);
 		}
 
-		[Authorize(Roles ="Student")]
+		[Authorize(Roles ="Student,Instructor")]
 		[HttpGet("Personal-Information/{studentId}")]
 		public async Task<IActionResult> GetPersonalInfo(string studentId)
 		{
@@ -41,7 +41,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(result);
 		}
 
-		[Authorize(Roles = "Student")]
+		[Authorize(Roles = "Student,Instructor")]
 		[HttpGet("Program-Details/{studentId}")]
 		public async Task<IActionResult> GetProgramDetails(string studentId)
 		{
@@ -60,6 +60,14 @@ namespace EduTrackAcademics.Controllers
 		{
 			await _service.UpdateAdditionalInfo(studentId, dto);
 			return Ok(new { Message = "Additional information updated successfully." });
+		}
+
+		[Authorize(Roles = "Student")]
+		[HttpGet("GetAdditional-Information/{studentId}")]
+		public async Task<IActionResult> GetAdditionalInfo(string studentId)
+		{
+			var result = await _service.GetAdditionalInfoAsync(studentId);
+			return Ok(result);
 		}
 
 		[Authorize(Roles = "Student")]

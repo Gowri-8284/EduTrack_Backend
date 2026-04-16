@@ -49,6 +49,24 @@ namespace EduTrackAcademics.Services
 				throw new StudentNotFoundException("Student not found");
 			await _repo.UpdateAdditionalInfoAsync(studentId, dto);
 		}
+		public async Task<StudentAdditionalDetailsDTO> GetAdditionalInfoAsync(string studentId)
+		{
+			// Check if student exists first using your existing repo method
+			if (!await _repo.StudentExistsAsync(studentId))
+			{
+				throw new StudentNotFoundException($"Student with ID {studentId} not found.");
+			}
+
+			var details = await _repo.GetAdditionalInfoAsync(studentId);
+
+			if (details == null)
+			{
+				// Return an empty DTO or throw exception based on your preference
+				throw new StudentNotFoundException("Additional details have not been filled for this student.");
+			}
+
+			return details;
+		}
 
 		public async Task<int> GetCreditPointsAsync(string studentId)
 		{
