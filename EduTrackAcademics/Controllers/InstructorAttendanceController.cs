@@ -82,10 +82,6 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-
-
-
-
 		[Authorize(Roles = "Instructor")]
 
 		[HttpGet("attendance/date/{date}")]

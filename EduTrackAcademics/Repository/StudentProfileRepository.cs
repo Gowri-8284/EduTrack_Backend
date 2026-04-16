@@ -89,6 +89,24 @@ namespace EduTrackAcademics.Repository
 			await _context.SaveChangesAsync();
 		}
 
+		public async Task<StudentAdditionalDetailsDTO?> GetAdditionalInfoAsync(string studentId)
+		{
+			return await _context.StudentAdditionalDetails
+				.Where(a => a.StudentId == studentId)
+				.Select(a => new StudentAdditionalDetailsDTO
+				{
+					Nationality = a.Nationality,
+					Citizenship = a.Citizenship,
+					dayscholarHosteller = a.DayscholarHosteller,
+					Certifications = a.Certifications,
+					Clubs_Chapters = a.Clubs_Chapters,
+					Achievements = a.Achievements,
+					EducationGap = a.EducationGap,
+				})
+				.AsNoTracking()
+				.FirstOrDefaultAsync();
+		}
+
 		// Get total credits for completed enrollments
 		public async Task<int> GetCreditPointsAsync(string studentId)
 		{

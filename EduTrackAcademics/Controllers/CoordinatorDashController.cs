@@ -44,7 +44,7 @@ namespace EduTrackAcademics.Controllers
 
 
 
-		[Authorize(Roles = "Coordinator,Admin")]
+	    [Authorize(Roles = "Coordinator,Admin")]		
 
 		[HttpGet("program/{programId}/years")]
 		public IActionResult GetAcademicYears(string programId)
@@ -464,7 +464,9 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
+
 		[Authorize(Roles = "Coordinator,Admin")]		
+
 
 		[HttpGet("instructor/{instructorId}/batches")]
 
