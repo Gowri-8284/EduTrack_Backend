@@ -149,7 +149,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(_service.GetStudentList());
 		}
 
-		[Authorize(Roles = "Coordinator,Admin")]
+		[Authorize(Roles = "Coordinator,Admin,Instructor")]
 		[HttpGet("instructors")]
 		public IActionResult GetInstructors(string skill)
 		{
