@@ -11,8 +11,6 @@ using System.Threading.Tasks;
 namespace EduTrackAcademics.Repository
 
 {
-
-
     public class AcademicReportRepository : IAcademicReportRepository
 
     {

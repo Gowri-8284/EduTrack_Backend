@@ -26,7 +26,7 @@ public class AcademicReportController : ControllerBase
         return Ok(result);
     }
 
-    [Authorize(Roles = "Coordinator, Admin")]
+   [Authorize(Roles = "Coordinator, Admin")]
     [HttpGet("full-report")]
     public async Task<IActionResult> GetFullReport()
     {
