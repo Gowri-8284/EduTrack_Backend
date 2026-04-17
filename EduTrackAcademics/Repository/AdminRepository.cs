@@ -255,25 +255,72 @@ namespace EduTrackAcademics.Repository
         //    return new { Message = "Rule added successfully", RuleId = rule.RuleId };
         //}
         // --- ACADEMIC RULES (FIXED PK VIOLATION) ---
+        //public object AddRule(AcademicRuleDTO dto)
+        //{
+        //    // 1. Rule Name check (Idhi undi, good)
+        //    var existingRule = _context.AcademicRules.FirstOrDefault(r => r.RuleName == dto.RuleName);
+        //    if (existingRule != null) throw new ApplicationException("Rule already exists");
+
+        //    // 2. --- Unique ID Check (Nee Programs logic lane ikkada kuda add chey) ---
+        //    string generatedRuleId = _idService.GenerateRuleId();
+
+        //    // Check if generated ID already exists in DB
+        //    if (_context.AcademicRules.Any(r => r.RuleId == generatedRuleId))
+        //    {
+        //        // Duplicate unte unique GUID generate chey
+        //        generatedRuleId = "RULE-" + Guid.NewGuid().ToString().Substring(0, 5).ToUpper();
+        //    }
+
+        //    var rule = new AcademicRule
+        //    {
+        //        RuleId = generatedRuleId, // Update chesina ID ikkada ivvu
+        //        RuleName = dto.RuleName,
+        //        RuleValue = dto.RuleValue,
+        //        Description = dto.Description,
+        //        LastUpdated = DateTime.UtcNow
+        //    };
+
+        //    _context.AcademicRules.Add(rule);
+        //    _context.SaveChanges();
+
+        //    return new { Message = "Rule added successfully", RuleId = rule.RuleId };
+        //}
         public object AddRule(AcademicRuleDTO dto)
         {
-            // 1. Rule Name check (Idhi undi, good)
+            // 1. Rule Name duplicate check
             var existingRule = _context.AcademicRules.FirstOrDefault(r => r.RuleName == dto.RuleName);
             if (existingRule != null) throw new ApplicationException("Rule already exists");
 
-            // 2. --- Unique ID Check (Nee Programs logic lane ikkada kuda add chey) ---
-            string generatedRuleId = _idService.GenerateRuleId();
+            // 2. Custom Logic for Sequence (R001, R002...)
+            string nextRuleId;
 
-            // Check if generated ID already exists in DB
-            if (_context.AcademicRules.Any(r => r.RuleId == generatedRuleId))
+            // Database lo unna max RuleId ni teesukuntundhi (e.g., "R001")
+            var lastRule = _context.AcademicRules
+                .OrderByDescending(r => r.RuleId)
+                .FirstOrDefault();
+
+            if (lastRule == null)
             {
-                // Duplicate unte unique GUID generate chey
-                generatedRuleId = "RULE-" + Guid.NewGuid().ToString().Substring(0, 5).ToUpper();
+                nextRuleId = "R001"; // Table empty unte modati ID
+            }
+            else
+            {
+                // "R001" nundi "001" ni teesi, number ga marchi +1 chestundhi
+                string currentId = lastRule.RuleId; // e.g., "R001"
+                if (currentId.StartsWith("R") && int.TryParse(currentId.Substring(1), out int lastNumber))
+                {
+                    nextRuleId = "R" + (lastNumber + 1).ToString("D3"); // D3 ante 002, 003 la format chestundi
+                }
+                else
+                {
+                    // Oka vela format thappithe fallback ga GUID or normal generator
+                    nextRuleId = _idService.GenerateRuleId();
+                }
             }
 
             var rule = new AcademicRule
             {
-                RuleId = generatedRuleId, // Update chesina ID ikkada ivvu
+                RuleId = nextRuleId,
                 RuleName = dto.RuleName,
                 RuleValue = dto.RuleValue,
                 Description = dto.Description,
