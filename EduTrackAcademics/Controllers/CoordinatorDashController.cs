@@ -42,20 +42,45 @@ namespace EduTrackAcademics.Controllers
 			return Ok(_service.GetCourse());
 		}
 
+<<<<<<< HEAD
 		//[Authorize(Roles = "Coordinator,Admin")]
+=======
+
+
+	    [Authorize(Roles = "Coordinator,Admin")]		
+
+>>>>>>> 4b84423fc6e32082a4f6a3234fd1ebf7a8fcc697
 		[HttpGet("program/{programId}/years")]
 		public IActionResult GetAcademicYears(string programId)
 		{
 			return Ok(_service.GetAcademicYears(programId));
+
+
 		}
 
+<<<<<<< HEAD
 		//[Authorize(Roles = "Coordinator")]
+=======
+		//[Authorize(Roles = "Coordinator")]		
+
+>>>>>>> 4b84423fc6e32082a4f6a3234fd1ebf7a8fcc697
 		[HttpPost("course")]
+
 		public IActionResult AddCourse([FromBody] CourseDTO dto)
+
 		{
+
 			return Ok(_service.AddCourse(dto));
+
+
 		}
+<<<<<<< HEAD
 		//[Authorize(Roles = "Coordinator")]
+=======
+
+		
+		[Authorize(Roles = "Coordinator")]
+>>>>>>> 4b84423fc6e32082a4f6a3234fd1ebf7a8fcc697
 		[HttpPut("course/{id}")]
 		public IActionResult UpdateCourse(string id, [FromBody] CourseDTO dto)
 		{
@@ -136,7 +161,11 @@ namespace EduTrackAcademics.Controllers
 			return Ok(_service.GetStudentList());
 		}
 
+<<<<<<< HEAD
 		//[Authorize(Roles = "Coordinator,Admin")]
+=======
+		[Authorize(Roles = "Coordinator,Admin,Instructor")]
+>>>>>>> 4b84423fc6e32082a4f6a3234fd1ebf7a8fcc697
 		[HttpGet("instructors")]
 		public IActionResult GetInstructors(string skill)
 		{
@@ -460,8 +489,7 @@ namespace EduTrackAcademics.Controllers
 			return config?.BatchSize ?? 2; // default = 2 (your test case)   
 		}
 
-		//[Authorize(Roles = "Coordinator,Admin")]    
-		//
+		[Authorize(Roles = "Coordinator,Admin")]		
 		[HttpGet("instructor/{instructorId}/batches")]
 
 		public IActionResult GetInstructorBatches(string instructorId)

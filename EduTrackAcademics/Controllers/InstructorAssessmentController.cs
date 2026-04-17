@@ -88,7 +88,10 @@ namespace EduTrackAcademics.Controllers
 			return Ok(questions);
 		}
 
-		[Authorize(Roles = "Coordinator, Instructor, Student")]
+
+
+	[Authorize(Roles = "Admin, Coordinator, Instructor, Student")]    
+
 		[HttpGet("assessments/course/{courseId}")]
 		public async Task<IActionResult> GetAssessmentsByCourse(string courseId)
 			=> Ok(await _service.GetAssessmentsByCourseAsync(courseId));
@@ -213,7 +216,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(result);
 		}
 
-		[Authorize(Roles = "Coordinator, Instructor")]
+		//[Authorize(Roles = "Coordinator, Instructor")]
 		[HttpGet("instructor/{instructorId}/courses")]
 		public async Task<IActionResult> GetCourses(string instructorId)
 		{

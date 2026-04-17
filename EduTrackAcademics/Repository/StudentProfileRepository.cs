@@ -89,6 +89,24 @@ namespace EduTrackAcademics.Repository
 			await _context.SaveChangesAsync();
 		}
 
+		public async Task<StudentAdditionalDetailsDTO?> GetAdditionalInfoAsync(string studentId)
+		{
+			return await _context.StudentAdditionalDetails
+				.Where(a => a.StudentId == studentId)
+				.Select(a => new StudentAdditionalDetailsDTO
+				{
+					Nationality = a.Nationality,
+					Citizenship = a.Citizenship,
+					dayscholarHosteller = a.DayscholarHosteller,
+					Certifications = a.Certifications,
+					Clubs_Chapters = a.Clubs_Chapters,
+					Achievements = a.Achievements,
+					EducationGap = a.EducationGap,
+				})
+				.AsNoTracking()
+				.FirstOrDefaultAsync();
+		}
+
 		// Get total credits for completed enrollments
 		public async Task<int> GetCreditPointsAsync(string studentId)
 		{
@@ -105,21 +123,26 @@ namespace EduTrackAcademics.Repository
 				AnyAsync(e => e.StudentId == studentId && e.CourseId == courseId);
 		}
 
-		public async Task<(DateTime DueDate, string Type, string CourseName)?> GetAssignmentDetailsAsync(string courseId)
+		public async Task<IEnumerable<(DateTime DueDate, string CourseName, string Status)>> GetStudentAssignmentsAsync(string studentId)
 		{
-			var result = await _context.Assessments
-				.Where(a => a.CourseId == courseId)
-				.Join(_context.Course, a => a.CourseId, c => c.CourseId, (a, c)
-				=> new {
-					a.DueDate,
-					a.Type,
-					c.CourseName
-				})
-				.FirstOrDefaultAsync();
+			var result = await _context.Enrollment
+				.Where(e => e.StudentId == studentId)
+				.Join(_context.Assessments,
+					e => e.CourseId,
+					a => a.CourseId,
+					(e, a) => new { e.CourseId, a.DueDate, a.Status })
+				.Join(_context.Course,
+					combined => combined.CourseId,
+					c => c.CourseId,
+					(combined, c) => new
+					{
+						combined.DueDate,
+						c.CourseName,
+						combined.Status
+					})
+				.ToListAsync();
 
-			if (result == null)
-				return null;
-			return (result.DueDate, result.Type, result.CourseName);
+			return result.Select(r => (r.DueDate, r.CourseName, r.Status));
 		}
 
 
