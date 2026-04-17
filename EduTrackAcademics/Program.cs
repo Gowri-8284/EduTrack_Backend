@@ -128,6 +128,7 @@ builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<CoordinatorDashboardService>();
 builder.Services.AddScoped<CoordinatorJobs>();
+builder.Services.AddScoped<IDeadlineReminderService, DeadlineReminderService>();
 
 
 builder.Services.AddCors(options =>
@@ -178,6 +179,17 @@ using (var scope = app.Services.CreateScope())
 			context.SaveChanges();
 		}
 	}
+}
+using (var scope = app.Services.CreateScope())
+{
+	var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+
+	// This schedules the job to run every morning at 8:00 AM
+	recurringJobManager.AddOrUpdate<IDeadlineReminderService>(
+		"daily-assessment-deadline-check", // Unique ID for the job
+		service => service.CheckAndSendDeadlineRemindersAsync(),
+		Cron.Daily(8)
+	);
 }
 
 // =======================// Middleware// =======================
