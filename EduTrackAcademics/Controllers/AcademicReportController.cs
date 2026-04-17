@@ -14,7 +14,7 @@ public class AcademicReportController : ControllerBase
         _service = service;
     }
 
-      [Authorize(Roles = "Coordinator, Admin")]
+      [Authorize(Roles = "Admin")]
     [HttpGet("get-batch-report")]
 
     public async Task<IActionResult> GetBatchReport(string batchId)
@@ -26,7 +26,7 @@ public class AcademicReportController : ControllerBase
         return Ok(result);
     }
 
-   [Authorize(Roles = "Coordinator, Admin")]
+   [Authorize(Roles = "Admin")]
     [HttpGet("full-report")]
     public async Task<IActionResult> GetFullReport()
     {
@@ -34,7 +34,7 @@ public class AcademicReportController : ControllerBase
         return Ok(result);
     }
     //  Generate + Save
-    [Authorize(Roles = "Coordinator, Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPost("generate-and-save")]
     public async Task<IActionResult> GenerateAndSaveReport()
     {
