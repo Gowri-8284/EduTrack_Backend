@@ -7,207 +7,207 @@ namespace EduTrackAcademics.Controllers
 
 {
 
-	[ApiController]
+    [ApiController]
 
-	[Route("api/admin")]
+    [Route("api/admin")]
 
-	[EnableCors("MyCorsPolicy")]
+    [EnableCors("MyCorsPolicy")]
 
 
 
-	public class AdminDashboardController : ControllerBase
-	{
+    public class AdminDashboardController : ControllerBase
+    {
 
-		private readonly IAdminService _service;
+        private readonly IAdminService _service;
 
 
-		public AdminDashboardController(IAdminService service)
+        public AdminDashboardController(IAdminService service)
 
-		{
+        {
 
-			_service = service;
+            _service = service;
 
-		}
+        }
 
 
-		[HttpPost("qualification")]
+        [HttpPost("qualification")]
 
-		public IActionResult AddQualification([FromBody] QualificationDTO dto)
+        public IActionResult AddQualification([FromBody] QualificationDTO dto)
 
-		{
+        {
 
-			var result = _service.AddQualification(dto);
+            var result = _service.AddQualification(dto);
 
-			return Ok(result);
+            return Ok(result);
 
-		}
+        }
 
-		[HttpGet("qualifications")]
+        [HttpGet("qualifications")]
 
-		public IActionResult GetAllQualification()
+        public IActionResult GetAllQualification()
 
-		{
-			return Ok(_service.GetAllQualification());
+        {
+            return Ok(_service.GetAllQualification());
 
-		}
+        }
 
-		[HttpPut("qualification/{name}")]
+        [HttpPut("qualification/{name}")]
 
-		public IActionResult EditQualification(string name, [FromBody] QualificationDTO dto)
+        public IActionResult EditQualification(string name, [FromBody] QualificationDTO dto)
 
-		{
-			var result = _service.UpdateQualificationByName(name, dto);
+        {
+            var result = _service.UpdateQualificationByName(name, dto);
 
-			return Ok(result);
+            return Ok(result);
 
-		}
+        }
 
-		[HttpDelete("qualification/{name}")]
+        [HttpDelete("qualification/{name}")]
 
-		public IActionResult DeleteQualification(string name)
+        public IActionResult DeleteQualification(string name)
 
-		{
-			var result = _service.DeleteQualificationByName(name);
+        {
+            var result = _service.DeleteQualificationByName(name);
 
-			return Ok(result);
+            return Ok(result);
 
-		}
+        }
 
-		[HttpPost("program")]
+        [HttpPost("program")]
 
-		public IActionResult AddProgram([FromBody] ProgramDTO dto)
+        public IActionResult AddProgram([FromBody] ProgramDTO dto)
 
-		{
+        {
 
-			var result = _service.AddProgram(dto);
+            var result = _service.AddProgram(dto);
 
-			return Ok(result);
+            return Ok(result);
 
-		}
+        }
 
-		[HttpGet("programs")]
+        [HttpGet("programs")]
 
-		public IActionResult GetAllPrograms()
+        public IActionResult GetAllPrograms()
 
-		{
-			return Ok(_service.GetAllPrograms());
+        {
+            return Ok(_service.GetAllPrograms());
 
-		}
+        }
 
-		[HttpPut("program/{name}")]
+        [HttpPut("program/{name}")]
 
-		public IActionResult EditProgram(string name, [FromBody] ProgramDTO dto)
+        public IActionResult EditProgram(string name, [FromBody] ProgramDTO dto)
 
-		{
-			var result = _service.UpdateProgramByName(name, dto);
+        {
+            var result = _service.UpdateProgramByName(name, dto);
 
-			return Ok(result);
+            return Ok(result);
 
-		}
+        }
 
-		[HttpDelete("program/{name}")]
+        [HttpDelete("program/{name}")]
 
-		public IActionResult DeleteProgram(string name)
+        public IActionResult DeleteProgram(string name)
 
-		{
-			var result = _service.DeleteProgramByName(name);
+        {
+            var result = _service.DeleteProgramByName(name);
 
-			return Ok(result);
+            return Ok(result);
 
-		}
+        }
 
-		[HttpPost("academic-year")]
+        [HttpPost("academic-year")]
 
-		public IActionResult AddAcademicYear([FromBody] AcademicYearDTO dto)
+        public IActionResult AddAcademicYear([FromBody] AcademicYearDTO dto)
 
-		{
+        {
 
-			var result = _service.AddAcademicYear(dto);
+            var result = _service.AddAcademicYear(dto);
 
-			return Ok(result);
+            return Ok(result);
 
-		}
+        }
 
-		[HttpGet("academic-years")]
+        [HttpGet("academic-years")]
 
-		public IActionResult GetAllAcademicYears()
+        public IActionResult GetAllAcademicYears()
 
-		{
-			return Ok(_service.GetAllAcademicYears());
+        {
+            return Ok(_service.GetAllAcademicYears());
 
-		}
+        }
 
-		[HttpPut("academic-year/{yearName}")]
+        [HttpPut("academic-year/{yearName}")]
 
-		public IActionResult EditAcademicYear(string yearName, [FromBody] AcademicYearDTO dto)
+        public IActionResult EditAcademicYear(string yearName, [FromBody] AcademicYearDTO dto)
 
-		{
-			var result = _service.UpdateAcademicYearByName(yearName, dto);
+        {
+            var result = _service.UpdateAcademicYearByName(yearName, dto);
 
-			return Ok(result);
+            return Ok(result);
 
-		}
+        }
 
-		[HttpDelete("academic-year/{yearName}")]
+        [HttpDelete("academic-year/{yearName}")]
 
-		public IActionResult DeleteAcademicYear(string yearName)
+        public IActionResult DeleteAcademicYear(string yearName)
 
-		{
-			var result = _service.DeleteAcademicYearByName(yearName);
+        {
+            var result = _service.DeleteAcademicYearByName(yearName);
 
-			return Ok(result);
+            return Ok(result);
 
-		}
-		[HttpPost("rules")]
+        }
+        [HttpPost("rules")]
 
-		public IActionResult AddRule([FromBody] AcademicRuleDTO dto)
+        public IActionResult AddRule([FromBody] AcademicRuleDTO dto)
 
-		{
+        {
 
-			var result = _service.AddRule(dto);
+            var result = _service.AddRule(dto);
 
-			return Ok(result);
+            return Ok(result);
 
-		}
+        }
 
 
-		[HttpGet("rules")]
+        [HttpGet("rules")]
 
-		public IActionResult GetAllRules()
+        public IActionResult GetAllRules()
 
-		{
+        {
 
-			return Ok(_service.GetAllRules());
+            return Ok(_service.GetAllRules());
 
-		}
+        }
 
-		// Note: GetAllRules is already in your code, adding Edit and Delete
+        // Note: GetAllRules is already in your code, adding Edit and Delete
 
-		[HttpPut("rule/{ruleName}")]
+        [HttpPut("rule/{ruleName}")]
 
-		public IActionResult EditRule(string ruleName, [FromBody] AcademicRuleDTO dto)
+        public IActionResult EditRule(string ruleName, [FromBody] AcademicRuleDTO dto)
 
-		{
+        {
 
-			var result = _service.UpdateRuleByName(ruleName, dto);
+            var result = _service.UpdateRuleByName(ruleName, dto);
 
-			return Ok(result);
+            return Ok(result);
 
-		}
+        }
 
 
-		[HttpDelete("rule/{ruleName}")]
+        [HttpDelete("rule/{ruleName}")]
 
-		public IActionResult DeleteRule(string ruleName)
+        public IActionResult DeleteRule(string ruleName)
 
-		{
+        {
 
-			var result = _service.DeleteRuleByName(ruleName);
+            var result = _service.DeleteRuleByName(ruleName);
 
-			return Ok(result);
+            return Ok(result);
 
-		}
+        }
 
-	}
+    }
 
 }

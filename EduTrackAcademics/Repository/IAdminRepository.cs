@@ -5,46 +5,46 @@ namespace EduTrackAcademics.Repository
 
 {
 
-	public interface IAdminRepository
-	{        // 🔹 QUALIFICATIONS
-		object AddQualification(QualificationDTO dto);
+    public interface IAdminRepository
+    {        // 🔹 QUALIFICATIONS
+        object AddQualification(QualificationDTO dto);
 
-		IEnumerable<QualificationDTO> GetAllQualifications();
+        IEnumerable<QualificationResponseDTO> GetAllQualifications();
 
-		object UpdateQualificationByName(string name, QualificationDTO dto);
+        object UpdateQualificationByName(string name, QualificationDTO dto);
 
-		object DeleteQualificationByName(string name);
-
-
-		// 🔹 PROGRAMS
-		object AddProgram(ProgramDTO dto);
-
-		IEnumerable<ProgramResponseDTO> GetAllPrograms();
-
-		object UpdateProgramByName(string name, ProgramDTO dto);
-
-		object DeleteProgramByName(string name);
+        object DeleteQualificationByName(string name);
 
 
-		// 🔹 ACADEMIC YEARS
-		object AddAcademicYear(AcademicYearDTO dto);
+        // 🔹 PROGRAMS
+        object AddProgram(ProgramDTO dto);
 
-		IEnumerable<AcademicYearResponseDTO> GetAllAcademicYears();
+        IEnumerable<ProgramResponseDTO> GetAllPrograms();
 
-		object UpdateAcademicYearByName(string name, AcademicYearDTO dto);
+        object UpdateProgramByName(string name, ProgramDTO dto);
 
-		object DeleteAcademicYearByName(string name);
+        object DeleteProgramByName(string name);
 
 
-		// 🔹 RULES
-		object AddRule(AcademicRuleDTO dto);
+        // 🔹 ACADEMIC YEARS
+        object AddAcademicYear(AcademicYearDTO dto);
 
-		IEnumerable<AcademicRuleResponseDTO> GetAllRules();
+        IEnumerable<AcademicYearResponseDTO> GetAllAcademicYears();
 
-		object UpdateRuleByName(string name, AcademicRuleDTO dto);
+        object UpdateAcademicYearByName(string name, AcademicYearDTO dto);
 
-		object DeleteRuleByName(string name);
+        object DeleteAcademicYearByName(string name);
 
-	}
+
+        // 🔹 RULES
+        object AddRule(AcademicRuleDTO dto);
+
+        IEnumerable<AcademicRuleResponseDTO> GetAllRules();
+
+        object UpdateRuleByName(string name, AcademicRuleDTO dto);
+
+        object DeleteRuleByName(string name);
+
+    }
 
 }
