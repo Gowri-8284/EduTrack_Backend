@@ -14,7 +14,11 @@ public class AcademicReportController : ControllerBase
         _service = service;
     }
 
+<<<<<<< HEAD
     [Authorize(Roles = "Admin")]
+=======
+      [Authorize(Roles = "Admin")]
+>>>>>>> origin/main
     [HttpGet("get-batch-report")]
 
     public async Task<IActionResult> GetBatchReport(string batchId)
@@ -26,7 +30,11 @@ public class AcademicReportController : ControllerBase
         return Ok(result);
     }
 
+<<<<<<< HEAD
     [Authorize(Roles = "Admin")]
+=======
+   [Authorize(Roles = "Admin")]
+>>>>>>> origin/main
     [HttpGet("full-report")]
     public async Task<IActionResult> GetFullReport()
     {

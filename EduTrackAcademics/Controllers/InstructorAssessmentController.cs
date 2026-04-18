@@ -216,7 +216,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(result);
 		}
 
-		[Authorize(Roles = "Coordinator, Instructor")]
+		//[Authorize(Roles = "Coordinator, Instructor")]
 		[HttpGet("instructor/{instructorId}/courses")]
 		public async Task<IActionResult> GetCourses(string instructorId)
 		{

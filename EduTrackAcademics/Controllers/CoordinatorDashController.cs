@@ -29,7 +29,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-		[Authorize(Roles = "Coordinator,Admin")]
+		//[Authorize(Roles = "Coordinator,Admin")]
 		[HttpGet("programs")]
 		public IActionResult GetPrograms()
 		{
@@ -42,20 +42,23 @@ namespace EduTrackAcademics.Controllers
 			return Ok(_service.GetCourse());
 		}
 
-
 	    [Authorize(Roles = "Coordinator,Admin")]		
 		[HttpGet("program/{programId}/years")]
 		public IActionResult GetAcademicYears(string programId)
 		{
 			return Ok(_service.GetAcademicYears(programId));
+
+
 		}
 
-		[Authorize(Roles = "Coordinator")]
 		[HttpPost("course")]
 		public IActionResult AddCourse([FromBody] CourseDTO dto)
 		{
 			return Ok(_service.AddCourse(dto));
 		}
+
+
+		
 		[Authorize(Roles = "Coordinator")]
 		[HttpPut("course/{id}")]
 		public IActionResult UpdateCourse(string id, [FromBody] CourseDTO dto)
@@ -64,7 +67,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(updatedCourse);
 		}
 
-		[Authorize(Roles = "Coordinator")]
+		//[Authorize(Roles = "Coordinator")]
 		[HttpDelete("course/{id}")]
 		public IActionResult DeleteCourse(string id)
 		{
@@ -72,14 +75,14 @@ namespace EduTrackAcademics.Controllers
 			return NoContent();
 		}
 
-		[Authorize(Roles = "Coordinator")]
+		//[Authorize(Roles = "Coordinator")]
 		[HttpGet("academic-year/{yearId}/courses")]
 		public IActionResult GetCourses(string yearId)
 		{
 			return Ok(_service.GetCourses(yearId));
 		}
 
-		[Authorize(Roles = "Coordinator,Admin")]
+		//[Authorize(Roles = "Coordinator,Admin")]
 		[HttpGet("students")]
 		public IActionResult GetStudents(string qualification, string program, int year)
 		{
@@ -137,7 +140,9 @@ namespace EduTrackAcademics.Controllers
 			return Ok(_service.GetStudentList());
 		}
 
-		[Authorize(Roles = "Coordinator,Admin")]
+
+		[Authorize(Roles = "Coordinator,Admin,Instructor")]
+
 		[HttpGet("instructors")]
 		public IActionResult GetInstructors(string skill)
 		{

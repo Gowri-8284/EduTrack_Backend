@@ -58,7 +58,21 @@ namespace EduTrackAcademics.AuthFolder
 			user.OtpExpiry = DateTime.UtcNow.AddMinutes(10);
 
 			await _repo.UpdateUserAsync(user);
-			await _emailService.SendEmailAsync(email, "EduTrack Verification Code", $"Your OTP is: <b>{otp}</b>");
+			await _emailService.SendEmailAsync(
+	        email,
+	        "EduTrack – Email Verification Code",
+             $@"
+                   <p>Dear User,</p>
+                   <p>Thank you for registering with <strong>EduTrack</strong>.</p>
+                   <p>To complete your registration, please use the One-Time Password (OTP) provided below:</p>
+                   <h2 style='color:#2F80ED;'>{otp}</h2>
+                   <p>This OTP is valid for a limited time. Please do not share it with anyone for security reasons.</p>
+                   <p>If you did not initiate this registration, please ignore this email.</p>
+				   <br/>
+				   <p>Best regards,</p>
+				   <p><strong>EduTrack Team</strong></p>
+				   <p><small>This is an automated email. Please do not reply.</small></p>
+              ");
 			return otp;
 		}
 
