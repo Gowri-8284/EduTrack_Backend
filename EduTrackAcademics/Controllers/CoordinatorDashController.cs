@@ -42,28 +42,9 @@ namespace EduTrackAcademics.Controllers
 			return Ok(_service.GetCourse());
 		}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-
 
 	    [Authorize(Roles = "Coordinator,Admin")]		
 
-=======
-	    [Authorize(Roles = "Coordinator,Admin")]		
->>>>>>> ba83f22c111a35f746589ea9db73484294d80e17
-=======
-	
-
-
-
-	    //[Authorize(Roles = "Coordinator,Admin")]		
-
-
-=======
-	    [Authorize(Roles = "Coordinator,Admin")]		
->>>>>>> origin/main
->>>>>>> Coordinator
 		[HttpGet("program/{programId}/years")]
 		public IActionResult GetAcademicYears(string programId)
 		{
@@ -72,42 +53,19 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-		//[Authorize(Roles = "Coordinator")]
+		[Authorize(Roles = "Coordinator")]
 
-=======
->>>>>>> ba83f22c111a35f746589ea9db73484294d80e17
-=======
-		//[Authorize(Roles = "Coordinator")]
 
-=======
->>>>>>> origin/main
->>>>>>> Coordinator
 		[HttpPost("course")]
 		public IActionResult AddCourse([FromBody] CourseDTO dto)
 		{
 			return Ok(_service.AddCourse(dto));
 		}
 
-<<<<<<< HEAD
-		//[Authorize(Roles = "Coordinator")]
-
-		
-
-=======
-
 		
 		[Authorize(Roles = "Coordinator")]
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
->>>>>>> ba83f22c111a35f746589ea9db73484294d80e17
-=======
->>>>>>> origin/main
->>>>>>> Coordinator
 		[HttpPut("course/{id}")]
 		public IActionResult UpdateCourse(string id, [FromBody] CourseDTO dto)
 		{
@@ -189,20 +147,10 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-		//[Authorize(Roles = "Coordinator,Admin,Instructor")]
-=======
+		
+		
 		[Authorize(Roles = "Coordinator,Admin,Instructor")]
->>>>>>> ba83f22c111a35f746589ea9db73484294d80e17
-=======
-		//[Authorize(Roles = "Coordinator,Admin")]
-=======
-		[Authorize(Roles = "Coordinator,Admin,Instructor")]
->>>>>>> origin/main
->>>>>>> Coordinator
-
-		[HttpGet("instructors")]
+[HttpGet("instructors")]
 		public IActionResult GetInstructors(string skill)
 		{
 			// Start with all instructors
