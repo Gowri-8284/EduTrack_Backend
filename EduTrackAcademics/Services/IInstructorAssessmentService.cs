@@ -23,7 +23,6 @@ namespace EduTrackAcademics.Services
 
 		// fetching data
 		Task<string> GetSubmissionStatus(string studentId, string assessmentId);
-		Task<Submission> SubmitAssessment(string studentId, string assessmentId, int score, string feedback);
 		Task<List<object>> GetStudentDashboard(string studentId);
 		Task<SubmissionResultDTO> GetResult(string studentId, string assessmentId);
 		Task<Submission> GetSubmission(string studentId, string assessmentId);
