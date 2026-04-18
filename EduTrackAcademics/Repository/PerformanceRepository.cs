@@ -1,13 +1,17 @@
 ﻿
+
 using EduTrackAcademics.Data;
 
 using EduTrackAcademics.DTO;
 
-using EduTrackAcademics.Model;
-using EduTrackAcademics.Services;
-using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
+using EduTrackAcademics.Model;
+
+using EduTrackAcademics.Services;
+
+using Microsoft.EntityFrameworkCore;
+
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 
@@ -39,7 +43,6 @@ namespace EduTrackAcademics.Repository
             return await _context.Performances.CountAsync();
 
         }
-
 
 
         private async Task<string> GenerateProgressId()
@@ -212,6 +215,7 @@ namespace EduTrackAcademics.Repository
         public async Task<List<InstructorBatchDTO>> GetInstructorBatchesAsync(string instructorId)
 
         {
+
             return await _context.CourseBatches
 
                 .Include(cb => cb.Course)
@@ -219,6 +223,7 @@ namespace EduTrackAcademics.Repository
                 .Include(cb => cb.Instructor) // 🔥 IMPORTANT
 
                 .Where(cb => cb.InstructorId == instructorId)
+
 .Select(cb => new InstructorBatchDTO
 
 {
@@ -250,6 +255,7 @@ namespace EduTrackAcademics.Repository
         ? cb.LastFilledDate.Value.AddDays(cb.Course.DurationInWeeks * 7)
 
         : (DateTime?)null
+
 })
 
                 .ToListAsync();
@@ -258,7 +264,6 @@ namespace EduTrackAcademics.Repository
 
 
         //// ✅ BATCH REPORT (FULL 🔥)
-
 
 
         public async Task<GetBatchReportDTO> GetBatchPerformanceAsync(string batchId)
@@ -325,12 +330,9 @@ namespace EduTrackAcademics.Repository
 
 
 
-
-
                 // 🔥 IMPORTANT FIX → completion calculation
+
                 var completion = await GetCourseProgressPercentageAsync(e.StudentId, batch.CourseId);
-
-
 
 
 
@@ -441,7 +443,8 @@ namespace EduTrackAcademics.Repository
                 BatchId = batchId,
 
                 CourseName = batch.Course.CourseName,
-                CourseId= batch.CourseId,
+
+                CourseId = batch.CourseId,
 
                 InstructorId = batch.InstructorId,
 
@@ -528,9 +531,13 @@ namespace EduTrackAcademics.Repository
 
 
         public async Task<List<CourseBatch>> GetBatchesByInstructor(string instructorId)
+
         {
+
             return await _context.CourseBatches
+
                 .Where(cb => cb.InstructorId == instructorId)
+
                 .ToListAsync();
 
         }
@@ -580,6 +587,7 @@ namespace EduTrackAcademics.Repository
                 .ToListAsync();
 
         }
+
         public async Task<List<BatchClassCountDTO>> GetBatchClassCountsByInstructor(string instructorId)
 
         {
@@ -629,6 +637,7 @@ namespace EduTrackAcademics.Repository
             return result;
 
         }
+
         public async Task<List<BatchStartDateDTO>> GetBatchStartDatesAsync()
 
         {
@@ -644,7 +653,8 @@ namespace EduTrackAcademics.Repository
                     BatchId = b.BatchId,
 
                     StartDate = b.LastFilledDate,
-                    EndDate=b.LastFilledDate.Value.AddDays(b.Course.DurationInWeeks * 7)
+
+                    EndDate = b.LastFilledDate.Value.AddDays(b.Course.DurationInWeeks * 7)
 
                 })
 
@@ -653,6 +663,7 @@ namespace EduTrackAcademics.Repository
                 .ToListAsync();
 
         }
+
         public async Task DeleteStudentAsync(string enrollmentId)
 
         {
@@ -670,6 +681,7 @@ namespace EduTrackAcademics.Repository
             await _context.SaveChangesAsync();
 
         }
+
         public async Task UpdateStudentAsync(UpdateStudentDTO dto)
 
         {
@@ -698,8 +710,8 @@ namespace EduTrackAcademics.Repository
 
 
 
-
         //------------------------------
+
         public async Task GeneratePerformanceForBatch(string batchId)
 
         {
@@ -822,23 +834,41 @@ namespace EduTrackAcademics.Repository
 
 
         public async Task<double> GetCourseDropoutRateAsync(string courseId)
+
         {
+
             var enrollments = await _context.Enrollment
+
                 .Where(e => e.CourseId == courseId)
+
                 .ToListAsync();
+
             int totalStudents = enrollments
+
                 .Select(e => e.StudentId)
+
                 .Distinct()
+
                 .Count();
+
             int droppedStudents = enrollments
+
                 .Where(e => e.Status == "Dropped")
+
                 .Select(e => e.StudentId)
+
                 .Distinct()
+
                 .Count();
+
             if (totalStudents == 0)
+
                 return 0;
+
             return (double)droppedStudents / totalStudents * 100;
+
         }
+
         public async Task<StudentAssessmentStatsDTO> GetStudentAssessmentStatsAsync(string studentId, string courseId)
 
         {
@@ -888,9 +918,7 @@ namespace EduTrackAcademics.Repository
 
 
 
-
-
-
-
     }
+
 }
+

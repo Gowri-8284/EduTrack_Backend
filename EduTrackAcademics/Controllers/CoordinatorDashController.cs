@@ -42,6 +42,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(_service.GetCourse());
 		}
 
+<<<<<<< HEAD
 	
 
 
@@ -49,6 +50,9 @@ namespace EduTrackAcademics.Controllers
 	    //[Authorize(Roles = "Coordinator,Admin")]		
 
 
+=======
+	    [Authorize(Roles = "Coordinator,Admin")]		
+>>>>>>> origin/main
 		[HttpGet("program/{programId}/years")]
 		public IActionResult GetAcademicYears(string programId)
 		{
@@ -57,23 +61,27 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
+<<<<<<< HEAD
 		//[Authorize(Roles = "Coordinator")]
 
+=======
+>>>>>>> origin/main
 		[HttpPost("course")]
-
 		public IActionResult AddCourse([FromBody] CourseDTO dto)
-
 		{
-
 			return Ok(_service.AddCourse(dto));
-
-
 		}
 
+<<<<<<< HEAD
 		//[Authorize(Roles = "Coordinator")]
 
 		
 
+=======
+
+		
+		[Authorize(Roles = "Coordinator")]
+>>>>>>> origin/main
 		[HttpPut("course/{id}")]
 		public IActionResult UpdateCourse(string id, [FromBody] CourseDTO dto)
 		{
@@ -155,7 +163,11 @@ namespace EduTrackAcademics.Controllers
 		}
 
 
+<<<<<<< HEAD
 		//[Authorize(Roles = "Coordinator,Admin")]
+=======
+		[Authorize(Roles = "Coordinator,Admin,Instructor")]
+>>>>>>> origin/main
 
 		[HttpGet("instructors")]
 		public IActionResult GetInstructors(string skill)
@@ -666,7 +678,33 @@ namespace EduTrackAcademics.Controllers
 				return StatusCode(500, "Error fetching instructors");
 			}
 		}
-		[HttpGet("GetAllBatchess")]
+        [HttpGet("coordinatorList")]
+        [Authorize]
+        public async Task<IActionResult> GetCoordinators()
+        {
+            try
+            {
+                var Coordinators = await _context.Users
+                    .Include(u => u.Coordinator) // Load the related Instructor data
+                    .Where(u => u.Role == "Coordinator")
+                    .Select(u => new
+                    {
+                        // Matches 'i.userId' in your React code
+                        UserId = u.UserId,
+                        // Uses Instructor Name if available, otherwise fallback to Email
+                        FullName = u.Coordinator != null ? u.Coordinator.CoordinatorName : u.Email,
+                        Email = u.Email
+                    })
+                    .ToListAsync();
+
+                return Ok(Coordinators);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error fetching instructors");
+            }
+        }
+        [HttpGet("GetAllBatchess")]
 		[Authorize]
 		public async Task<IActionResult> GetAllBatches()
 		{

@@ -28,7 +28,6 @@ namespace EduTrackAcademics.Repository
 		// fetching data
 		Task<Submission> GetSubmission(string studentId, string assessmentId);
 		Task<bool> ExistsSubmission(string studentId, string assessmentId);
-		Task AddSubmission(Submission submission);
 		Task<int> GetTotalMarks(string assessmentId);
 		Task<List<Submission>> GetStudentSubmissions(string studentId);
 		IEnumerable<AcademicYearCourseResponseDTO> GetCoursesByAcademicYear(string academicYearId);

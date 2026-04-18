@@ -155,6 +155,8 @@ namespace EduTrackAcademics.Services
 			if (question == null)
 				throw new QuestionNotFoundException(id);
 
+			await ValidateQuestionMarksForUpdate(dto.AssessmentId, id, dto.Marks);
+
 			question.QuestionText = dto.QuestionText;
 			question.OptionA = dto.OptionA;
 			question.OptionB = dto.OptionB;
@@ -187,30 +189,7 @@ namespace EduTrackAcademics.Services
 			return exists ? "Submitted" : "Pending";
 		}
 
-		//  SUBMIT (SubmissionId based)
-		public async Task<Submission> SubmitAssessment(string studentId, string assessmentId, int score, string feedback)
-		{
-			var exists = await _repo.ExistsSubmission(studentId, assessmentId);
 
-			if (exists)
-				throw new Exception("Already submitted");
-
-			string submissionId = "SB" + Guid.NewGuid().ToString("N").Substring(0, 5).ToUpper();
-
-			var submission = new Submission
-			{
-				SubmissionId = submissionId,
-				StudentID = studentId,
-				AssessmentId = assessmentId,
-				SubmissionDate = DateTime.Now,
-				Score = score,
-				Feedback = feedback
-			};
-
-			await _repo.AddSubmission(submission);
-
-			return submission;
-		}
 
 		//  DASHBOARD
 		public async Task<List<object>> GetStudentDashboard(string studentId)
@@ -277,6 +256,35 @@ namespace EduTrackAcademics.Services
 				);
 			}
 		}
+
+		private async Task ValidateQuestionMarksForUpdate(string assessmentId, string questionId, int newMarks)
+		{
+			// Get assessment
+			var assessment = await _repo.GetAssessmentByIdAsync(assessmentId);
+			if (assessment == null)
+				throw new Exception("Assessment not found");
+
+			// Get current total marks
+			var currentTotal = await _repo.GetTotalMarksByAssessmentIdAsync(assessmentId);
+
+			// Get existing question
+			var existingQuestion = await _repo.GetQuestionByIdAsync(questionId);
+			if (existingQuestion == null)
+				throw new Exception("Question not found");
+
+			// Adjust total (remove old marks, add new)
+			var adjustedTotal = currentTotal - existingQuestion.Marks + newMarks;
+
+			if (adjustedTotal > assessment.MaxMarks)
+			{
+				throw new Exception(
+					$"Marks limit exceeded. Current: {currentTotal}, " +
+					$"Removing: {existingQuestion.Marks}, Adding: {newMarks}, " +
+					$"Max: {assessment.MaxMarks}"
+				);
+			}
+		}
+
 
 		public async Task<List<InstructorCourseBatchDTO>> GetCoursesByInstructorAsync(string instructorId)
 		{

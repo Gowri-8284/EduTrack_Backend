@@ -45,7 +45,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 3. Get all batches assigned to a specific instructor
-        [Authorize(Roles = "Instructor")]
+        [Authorize(Roles = "Instructor,Admin,Coordinator")]
         [HttpGet("instructor-batches/{instructorId}")]
         public async Task<ActionResult<List<InstructorBatchDTO>>> GetInstructorBatches(string instructorId)
         {
@@ -186,7 +186,7 @@ namespace EduTrackAcademics.Controllers
         }
 
         // 12. Delete a student enrollment
-        [Authorize(Roles = "Instructor,admin,coordinator")]
+        [Authorize(Roles = "Instructor,Admin,Coordinator")]
         [HttpDelete("delete-student/{enrollmentId}")]
         public async Task<ActionResult<object>> DeleteStudent(string enrollmentId)
         {
@@ -201,8 +201,12 @@ namespace EduTrackAcademics.Controllers
             }
         }
 
-        [Authorize(Roles = "Instructor,admin,coordinator")]
+        [Authorize(Roles = "Instructor,Admin,Coordinator")]
+
+  
+
         [HttpGet("course-dropout/{courseId}")] 
+
         public async Task<IActionResult> GetCourseDropoutRate(string courseId)
         {
             try
@@ -228,7 +232,7 @@ namespace EduTrackAcademics.Controllers
             }
         }
 
-        [Authorize(Roles = "Instructor,admin,coordinator")]
+        [Authorize(Roles = "Instructor,Admin,Coordinator")]
         [HttpGet("student-assessment-stats/{studentId}")]
 
         public async Task<ActionResult> GetStudentAssessmentStats(string studentId)
@@ -244,3 +248,4 @@ namespace EduTrackAcademics.Controllers
 
     }
 }
+

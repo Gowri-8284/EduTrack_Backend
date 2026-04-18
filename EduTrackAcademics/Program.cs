@@ -174,12 +174,12 @@ using (var scope = app.Services.CreateScope())
 
 	if (admin != null)
 	{
-		if (!admin.Password.StartsWith("$2"))
-		{
+
 			admin.Password = BCrypt.Net.BCrypt.HashPassword("Admin@123");
-			context.SaveChanges();
-		}
+		context.SaveChanges();
+
 	}
+
 }
 using (var scope = app.Services.CreateScope())
 {
