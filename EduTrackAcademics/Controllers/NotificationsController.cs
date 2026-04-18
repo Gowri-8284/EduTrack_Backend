@@ -24,14 +24,11 @@ namespace EduTrackAcademics.Controllers
 		{
 			var senderRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
 
-			// 1. We save the notification with a descriptive TargetRole (for history/logs)
 			var notification = new Notification
 			{
 				Title = dto.Title,
 				Message = dto.Message,
 				CreatedByRole = senderRole,
-				// Even if it's not in the User table, we store "Batch" in the Notification 
-				// table so we know this was a batch-specific message later.
 				TargetRole = dto.TargetRole
 			};
 
@@ -40,31 +37,32 @@ namespace EduTrackAcademics.Controllers
 
 			List<int> targetUserIds = new List<int>();
 
-			// 2. Logic to find the actual UserIds
 			if (dto.TargetRole == "Student")
 			{
-				// Simple filter: all students
 				targetUserIds = _context.Users.Where(u => u.Role == "Student").Select(u => u.UserId).ToList();
 			}
 			else if (dto.TargetRole == "Instructor")
 			{
 				if (dto.TargetId.HasValue && dto.TargetId > 0)
-					targetUserIds.Add(dto.TargetId.Value); // One specific instructor
+					targetUserIds.Add(dto.TargetId.Value);
 				else
 					targetUserIds = _context.Users.Where(u => u.Role == "Instructor").Select(u => u.UserId).ToList();
 			}
 			else if (dto.TargetRole == "Batch")
 			{
-				targetUserIds = _context.StudentBatchAssignments
-					.Where(sba => sba.BatchId == dto.BatchIdString)
-					.Select(sba => sba.Student.UserId)
-					// This part removes nulls and converts int? to int
-					.Where(id => id.HasValue)
-					.Select(id => id.Value)
-					.ToList();
+				if (!string.IsNullOrEmpty(dto.BatchIdString))
+				{
+					// We go from Batch -> Student (by ID) -> User (by Email)
+					targetUserIds = (from sba in _context.StudentBatchAssignments
+									 join std in _context.Student on sba.StudentId equals std.StudentId
+									 join usr in _context.Users on std.StudentEmail equals usr.Email
+									 where sba.BatchId == dto.BatchIdString
+									 select usr.UserId)
+									 .Distinct()
+									 .ToList();
+				}
 			}
-			// Save status for each targeted user
-			foreach (var userId in targetUserIds.Distinct())
+			foreach (var userId in targetUserIds)
 			{
 				_context.NotificationUserStatus.Add(new NotificationUserStatus
 				{
@@ -82,25 +80,29 @@ namespace EduTrackAcademics.Controllers
 		[HttpGet("my-notifications")]
 		public IActionResult GetMyNotifications()
 		{
-			var userId = int.Parse(User.FindFirst("id")?.Value);
+			var userIdString = User.FindFirst("id")?.Value;
+			if (string.IsNullOrEmpty(userIdString)) return Unauthorized();
+			var userId = int.Parse(userIdString);
 
-			var data = (from n in _context.Notification
-						join s in _context.NotificationUserStatus
-						on n.NotificationId equals s.NotificationId
-						where s.UserId == userId
-						orderby n.CreatedOn descending
-						select new
-						{
-							n.NotificationId,
-							n.Title,
-							n.Message,
-							n.CreatedOn,
-							n.TargetRole,       // ✅ include this
-							n.CreatedByRole,    // ✅ include this
-							s.IsRead
-						}).ToList();
+			// Use a simpler join to ensure we aren't filtering out Batch roles
+			var results = _context.NotificationUserStatus
+				.Where(s => s.UserId == userId)
+				.Join(_context.Notification,
+					status => status.NotificationId,
+					notif => notif.NotificationId,
+					(status, notif) => new {
+						notif.NotificationId,
+						notif.Title,
+						notif.Message,
+						notif.CreatedOn,
+						notif.TargetRole,
+						notif.CreatedByRole,
+						status.IsRead
+					})
+				.OrderByDescending(x => x.CreatedOn)
+				.ToList();
 
-			return Ok(data);
+			return Ok(results);
 		}
 		[Authorize]
 		[HttpPut("{id}/mark-read")]

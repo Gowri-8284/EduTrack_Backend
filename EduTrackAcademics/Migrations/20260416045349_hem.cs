@@ -5,7 +5,7 @@
 namespace EduTrackAcademics.Migrations
 {
     /// <inheritdoc />
-    public partial class instructor : Migration
+    public partial class hem : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
