@@ -206,109 +206,54 @@ namespace EduTrackAcademics.Repository
         // 💾 SAVE / UPDATE
 
         public async Task SaveOrUpdateAcademicReport(AcademicReportDTO dto)
-
         {
-
             foreach (var batch in dto.Batches)
-
             {
+                var perf = await _performanceRepository.GetBatchPerformanceAsync(batch.BatchId);
+                if (perf == null || perf.Students == null) continue;
 
-                var perf = await _performanceRepository
-
-                    .GetBatchPerformanceAsync(batch.BatchId);
-
-                if (perf == null || perf.Students == null)
-
-                    continue;
-
-                int baseNumber = await _context.AcademicReport.CountAsync();
-
+                // Use a unique seed or Guid to ensure no collisions during the loop
                 int i = 1;
-
                 foreach (var student in perf.Students)
-
                 {
+                    var sid = !string.IsNullOrEmpty(student.StudentId) ? student.StudentId : Guid.NewGuid().ToString("N").Substring(0, 5);
 
-                    // ✅ SAFE STUDENT ID (avoid null)
+                    // RECOMMENDATION: Use a more robust ID format or let the DB handle it
+                    var reportId = $"R_{batch.BatchId}_{sid}";
 
-                    var sid = !string.IsNullOrEmpty(student.StudentId)
-
-                        ? student.StudentId
-
-                        : Guid.NewGuid().ToString("N").Substring(0, 5);
-
-                    // ✅ UNIQUE REPORT ID
-
-                    var reportId = $"R{baseNumber + i:D3}_{sid}";
-
-                    // ✅ CHECK EXISTING
-
-                    var existing = await _context.AcademicReport
-
-                        .FirstOrDefaultAsync(r => r.ReportId == reportId);
+                    // Check if the entity is ALREADY being tracked in this session to avoid the exception
+                    var existing = _context.AcademicReport.Local.FirstOrDefault(r => r.ReportId == reportId)
+                                   ?? await _context.AcademicReport.FirstOrDefaultAsync(r => r.ReportId == reportId);
 
                     if (existing != null)
-
                     {
-
-                        // ✅ UPDATE
-
+                        // UPDATE existing instance
                         existing.AvgScore = student.AvgScore;
-
                         existing.CompletionRate = (decimal)student.CompletionPercentage;
-
                         existing.StudentAttendance = (decimal)student.AttendancePercentage;
-
                         existing.BatchAverageAttendance = batch.BatchAverageAttendance;
-
-                        existing.DropOutRate = 0;
-
                         existing.GeneratedDate = DateTime.Now;
-
                     }
-
                     else
-
                     {
-
-                        // ✅ INSERT
-
+                        // INSERT new instance
                         var report = new AcademicReport
-
                         {
-
                             ReportId = reportId,
-
                             Course = batch.CourseName,
-
                             AvgScore = student.AvgScore,
-
                             CompletionRate = (decimal)student.CompletionPercentage,
-
                             BatchAverageAttendance = batch.BatchAverageAttendance,
-
                             StudentAttendance = (decimal)student.AttendancePercentage,
-
                             DropOutRate = 0,
-
                             GeneratedDate = DateTime.Now
-
                         };
-
                         await _context.AcademicReport.AddAsync(report);
-
                     }
-
                     i++;
-
                 }
-
             }
-
-            // ✅ SAVE ONCE
-
             await _context.SaveChangesAsync();
-
         }
 
 
