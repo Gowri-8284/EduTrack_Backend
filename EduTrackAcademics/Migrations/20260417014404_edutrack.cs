@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EduTrackAcademics.Migrations
 {
     /// <inheritdoc />
-    public partial class finalproject : Migration
+    public partial class edutrack : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -156,6 +156,27 @@ namespace EduTrackAcademics.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NotificationUserStatus",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NotificationId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NotificationUserStatus", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NotificationUserStatus_Notification_NotificationId",
+                        column: x => x.NotificationId,
+                        principalTable: "Notification",
+                        principalColumn: "NotificationId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -737,6 +758,11 @@ namespace EduTrackAcademics.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_NotificationUserStatus_NotificationId",
+                table: "NotificationUserStatus",
+                column: "NotificationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Performances_BatchId",
                 table: "Performances",
                 column: "BatchId");
@@ -812,7 +838,7 @@ namespace EduTrackAcademics.Migrations
                 name: "InstructorCourseAssignments");
 
             migrationBuilder.DropTable(
-                name: "Notification");
+                name: "NotificationUserStatus");
 
             migrationBuilder.DropTable(
                 name: "Performances");
@@ -843,6 +869,9 @@ namespace EduTrackAcademics.Migrations
 
             migrationBuilder.DropTable(
                 name: "Modules");
+
+            migrationBuilder.DropTable(
+                name: "Notification");
 
             migrationBuilder.DropTable(
                 name: "Assessments");

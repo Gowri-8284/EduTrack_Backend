@@ -144,13 +144,6 @@ namespace EduTrackAcademics.Repository
 							&& s.AssessmentId == assessmentId);
 		}
 
-		public async Task AddSubmission(Submission submission)
-		{
-			await _context.Submission.AddAsync(submission);
-
-			// Save internally (not exposed outside)
-			await _context.SaveChangesAsync();
-		}
 
 		public async Task<int> GetTotalMarks(string assessmentId)
 		{

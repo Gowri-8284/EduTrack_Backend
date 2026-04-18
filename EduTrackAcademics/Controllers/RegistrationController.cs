@@ -27,11 +27,16 @@ namespace EduTrackAcademics.Controllers
 			return Ok(new { message = "Student registered successfully" });
 		}
 
+<<<<<<< HEAD
 		//  Instructor Registration
 
 
 	[Authorize(Roles ="Coordinator")]
 
+=======
+
+	    [Authorize(Roles ="Coordinator")]
+>>>>>>> ba83f22c111a35f746589ea9db73484294d80e17
 		[HttpPost("Instructor")]
 		public async Task<IActionResult> RegisterInstructor([FromForm] InstructorDTO dto)
 		{
@@ -39,8 +44,12 @@ namespace EduTrackAcademics.Controllers
 			return Ok(new { message = "Instructor registered successfully" });
 		}
 
+<<<<<<< HEAD
 	[Authorize(Roles = "Admin")]
 
+=======
+	    [Authorize(Roles = "Admin")]
+>>>>>>> ba83f22c111a35f746589ea9db73484294d80e17
 		[HttpPost("Coordinator")]
 		public async Task<IActionResult> RegisterCoordinator([FromForm] CoordinatorDTO dto)
 		{

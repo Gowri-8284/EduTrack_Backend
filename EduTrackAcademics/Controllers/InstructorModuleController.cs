@@ -61,7 +61,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(modules);
 		}
 
-		[Authorize(Roles = "Instructor")]
+		//[Authorize(Roles = "Instructor")]
 		[HttpPut("module/{moduleId}")]
 		public async Task<IActionResult> UpdateModule(string moduleId, ModuleDTO dto)
 		{
@@ -73,7 +73,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(new { message });
 		}
 
-		[Authorize(Roles = "Instructor")]
+		//[Authorize(Roles = "Instructor")]
 		[HttpDelete("module/{moduleId}")]
 		public async Task<IActionResult> DeleteModule(string moduleId)
 		{
