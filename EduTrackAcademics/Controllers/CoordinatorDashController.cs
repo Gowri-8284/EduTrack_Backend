@@ -43,6 +43,7 @@ namespace EduTrackAcademics.Controllers
 		}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 
@@ -51,6 +52,18 @@ namespace EduTrackAcademics.Controllers
 =======
 	    [Authorize(Roles = "Coordinator,Admin")]		
 >>>>>>> ba83f22c111a35f746589ea9db73484294d80e17
+=======
+	
+
+
+
+	    //[Authorize(Roles = "Coordinator,Admin")]		
+
+
+=======
+	    [Authorize(Roles = "Coordinator,Admin")]		
+>>>>>>> origin/main
+>>>>>>> Coordinator
 		[HttpGet("program/{programId}/years")]
 		public IActionResult GetAcademicYears(string programId)
 		{
@@ -60,24 +73,41 @@ namespace EduTrackAcademics.Controllers
 		}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 		//[Authorize(Roles = "Coordinator")]
 
 =======
 >>>>>>> ba83f22c111a35f746589ea9db73484294d80e17
+=======
+		//[Authorize(Roles = "Coordinator")]
+
+=======
+>>>>>>> origin/main
+>>>>>>> Coordinator
 		[HttpPost("course")]
 		public IActionResult AddCourse([FromBody] CourseDTO dto)
 		{
 			return Ok(_service.AddCourse(dto));
 		}
 
+<<<<<<< HEAD
+		//[Authorize(Roles = "Coordinator")]
+
+		
+
+=======
 
 		
 		[Authorize(Roles = "Coordinator")]
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> ba83f22c111a35f746589ea9db73484294d80e17
+=======
+>>>>>>> origin/main
+>>>>>>> Coordinator
 		[HttpPut("course/{id}")]
 		public IActionResult UpdateCourse(string id, [FromBody] CourseDTO dto)
 		{
@@ -160,10 +190,17 @@ namespace EduTrackAcademics.Controllers
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		//[Authorize(Roles = "Coordinator,Admin,Instructor")]
 =======
 		[Authorize(Roles = "Coordinator,Admin,Instructor")]
 >>>>>>> ba83f22c111a35f746589ea9db73484294d80e17
+=======
+		//[Authorize(Roles = "Coordinator,Admin")]
+=======
+		[Authorize(Roles = "Coordinator,Admin,Instructor")]
+>>>>>>> origin/main
+>>>>>>> Coordinator
 
 		[HttpGet("instructors")]
 		public IActionResult GetInstructors(string skill)
@@ -720,6 +757,24 @@ namespace EduTrackAcademics.Controllers
 			{
 				return StatusCode(500, "Error fetching batches");
 			}
+		}
+		[HttpDelete("instructor/{id}/delete")]
+		public async Task<IActionResult> DeleteInstructor(string id)
+		{
+			var instructor = await _context.Instructor.FindAsync(id);
+			if (instructor == null)
+			{
+				return NotFound(new { message = "Instructor not found" });
+			}
+
+			// Optional: Remove assignments or related data if necessary
+			// var assignments = _context.StudentBatchAssignments.Where(a => a.InstructorId == id);
+			// _context.StudentBatchAssignments.RemoveRange(assignments);
+
+			_context.Instructor.Remove(instructor);
+			await _context.SaveChangesAsync();
+
+			return Ok(new { message = "Instructor removed successfully from database" });
 		}
 
 
