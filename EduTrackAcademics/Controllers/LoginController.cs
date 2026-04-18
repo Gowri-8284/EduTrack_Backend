@@ -1,9 +1,10 @@
-﻿using EduTrackAcademics.DTO;
-using EduTrackAcademics.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Azure;
 using EduTrackAcademics.AuthFolder;
+using EduTrackAcademics.DTO;
+using EduTrackAcademics.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 namespace EduTrackAcademics.Controllers
 {
 	[ApiController]
@@ -51,9 +52,13 @@ namespace EduTrackAcademics.Controllers
 		public async Task<IActionResult> Login([FromBody] LoginDTO dto)
 		{
 			var token = await _authService.LoginAsync(dto);
+			var response = await _authService.LoginAsync(dto);
 
 			if (token == null)
 				return Unauthorized(new { Message = "Invalid email or password." });
+
+			if (!string.IsNullOrEmpty(response.Message))
+				return BadRequest(new { Message = response.Message });
 
 			return Ok(new { Token = token });
 		}
