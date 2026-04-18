@@ -191,7 +191,7 @@ namespace EduTrackAcademics.Repository
 					.ThenInclude(ay => ay.Program)
 						.ThenInclude(p => p.Qualification)
 				.Where(c => c.AcademicYear.Program.ProgramName == student.StudentProgram
-					   && c.AcademicYear.Program.Qualification.QualificationName == student.StudentQualification)
+					   && c.AcademicYear.Program.Qualification.Qualificationsh == student.StudentQualification)
 				.ToListAsync();
 		}
 
@@ -208,7 +208,7 @@ namespace EduTrackAcademics.Repository
 					.ThenInclude(ay => ay.Program)
 						.ThenInclude(p => p.Qualification)
 				.Where(c => c.AcademicYear.Program.ProgramName == student.StudentProgram
-					   && c.AcademicYear.Program.Qualification.QualificationName == student.StudentQualification
+					   && c.AcademicYear.Program.Qualification.Qualificationsh == student.StudentQualification
 					   && c.CourseName.Contains(courseName)) // Partial match search
 				.ToListAsync();
 		}
