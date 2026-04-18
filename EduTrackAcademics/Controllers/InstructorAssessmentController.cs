@@ -157,22 +157,6 @@ namespace EduTrackAcademics.Controllers
 			return Ok(status);
 		}
 
-		// Submit Assessment
-		//[Authorize(Roles = "Instructor")]
-		//[HttpPost("submit")]
-		//public async Task<IActionResult> Submit(string studentId, string assessmentId, int score, string feedback)
-		//{
-		//	try
-		//	{
-		//		var result = await _service.SubmitAssessment(studentId, assessmentId, score, feedback);
-		//		return Ok(result);
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		return BadRequest(ex.Message);
-		//	}
-		//}
-
 		// Dashboard
 		[Authorize(Roles = "Instructor")]
 		[HttpGet("student/{studentId}")]
@@ -224,7 +208,7 @@ namespace EduTrackAcademics.Controllers
 			return Ok(data);
 		}
 
-		[Authorize(Roles = "Instructor")]
+		//[Authorize(Roles = "Instructor")]
 		[HttpGet("assessment/{assessmentId}/status")]
 		public async Task<IActionResult> GetAssessmentStatus(string assessmentId)
 		{
@@ -239,7 +223,7 @@ namespace EduTrackAcademics.Controllers
 			}
 		}
 
-		[Authorize(Roles = "Instructor")]
+		//[Authorize(Roles = "Instructor")]
 		[HttpGet("assessment/{assessmentId}/details")]
 		public async Task<IActionResult> GetSubmissionDetails(string assessmentId)
 		{
