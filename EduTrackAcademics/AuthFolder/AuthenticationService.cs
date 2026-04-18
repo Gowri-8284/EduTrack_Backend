@@ -38,6 +38,11 @@ namespace EduTrackAcademics.AuthFolder
 			if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
 				return null;
 
+			if (!user.IsEmailVerified)
+			{
+				return new LoginResponseDTO { Message = "Email not verified" };
+			}
+
 			var accessToken = _jwtService.GenerateToken(user);
 			var refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
