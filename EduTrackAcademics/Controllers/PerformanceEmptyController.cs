@@ -202,11 +202,11 @@ namespace EduTrackAcademics.Controllers
         }
 
         [Authorize(Roles = "Instructor,Admin,Coordinator")]
-<<<<<<< HEAD
-        [HttpGet("course-dropout/{courseId}")]
-=======
+
+  
+
         [HttpGet("course-dropout/{courseId}")] 
->>>>>>> origin/main
+
         public async Task<IActionResult> GetCourseDropoutRate(string courseId)
         {
             try

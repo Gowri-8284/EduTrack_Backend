@@ -173,14 +173,10 @@ using (var scope = app.Services.CreateScope())
 
 	if (admin != null)
 	{
-<<<<<<< HEAD
+
 			admin.Password = BCrypt.Net.BCrypt.HashPassword("Admin@123");
-			context.SaveChanges();
-		
-=======
-		admin.Password = BCrypt.Net.BCrypt.HashPassword("Admin@123");
 		context.SaveChanges();
->>>>>>> origin/main
+
 	}
 
 }
