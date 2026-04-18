@@ -129,6 +129,7 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<CoordinatorDashboardService>();
 builder.Services.AddScoped<CoordinatorJobs>();
 builder.Services.AddScoped<IDeadlineReminderService, DeadlineReminderService>();
+builder.Services.AddScoped<BatchCleanupService>();
 
 
 builder.Services.AddCors(options =>
@@ -189,6 +190,11 @@ using (var scope = app.Services.CreateScope())
 		"daily-assessment-deadline-check", // Unique ID for the job
 		service => service.CheckAndSendDeadlineRemindersAsync(),
 		Cron.Daily(8)
+	);
+	recurringJobManager.AddOrUpdate<BatchCleanupService>(
+		"auto-delete-expired-batches",
+		service => service.ProcessExpiredBatches(),
+		Cron.Daily // Runs at 00:00
 	);
 }
 

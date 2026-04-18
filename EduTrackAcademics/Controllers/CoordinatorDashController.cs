@@ -42,14 +42,13 @@ namespace EduTrackAcademics.Controllers
 			return Ok(_service.GetCourse());
 		}
 
-<<<<<<< HEAD
-		//[Authorize(Roles = "Coordinator,Admin")]
-=======
+	
 
 
-	    [Authorize(Roles = "Coordinator,Admin")]		
 
->>>>>>> 4b84423fc6e32082a4f6a3234fd1ebf7a8fcc697
+	    //[Authorize(Roles = "Coordinator,Admin")]		
+
+
 		[HttpGet("program/{programId}/years")]
 		public IActionResult GetAcademicYears(string programId)
 		{
@@ -58,12 +57,8 @@ namespace EduTrackAcademics.Controllers
 
 		}
 
-<<<<<<< HEAD
 		//[Authorize(Roles = "Coordinator")]
-=======
-		//[Authorize(Roles = "Coordinator")]		
 
->>>>>>> 4b84423fc6e32082a4f6a3234fd1ebf7a8fcc697
 		[HttpPost("course")]
 
 		public IActionResult AddCourse([FromBody] CourseDTO dto)
@@ -74,13 +69,11 @@ namespace EduTrackAcademics.Controllers
 
 
 		}
-<<<<<<< HEAD
+
 		//[Authorize(Roles = "Coordinator")]
-=======
 
 		
-		[Authorize(Roles = "Coordinator")]
->>>>>>> 4b84423fc6e32082a4f6a3234fd1ebf7a8fcc697
+
 		[HttpPut("course/{id}")]
 		public IActionResult UpdateCourse(string id, [FromBody] CourseDTO dto)
 		{
@@ -161,11 +154,9 @@ namespace EduTrackAcademics.Controllers
 			return Ok(_service.GetStudentList());
 		}
 
-<<<<<<< HEAD
+
 		//[Authorize(Roles = "Coordinator,Admin")]
-=======
-		[Authorize(Roles = "Coordinator,Admin,Instructor")]
->>>>>>> 4b84423fc6e32082a4f6a3234fd1ebf7a8fcc697
+
 		[HttpGet("instructors")]
 		public IActionResult GetInstructors(string skill)
 		{
@@ -695,6 +686,24 @@ namespace EduTrackAcademics.Controllers
 			{
 				return StatusCode(500, "Error fetching batches");
 			}
+		}
+		[HttpDelete("instructor/{id}/delete")]
+		public async Task<IActionResult> DeleteInstructor(string id)
+		{
+			var instructor = await _context.Instructor.FindAsync(id);
+			if (instructor == null)
+			{
+				return NotFound(new { message = "Instructor not found" });
+			}
+
+			// Optional: Remove assignments or related data if necessary
+			// var assignments = _context.StudentBatchAssignments.Where(a => a.InstructorId == id);
+			// _context.StudentBatchAssignments.RemoveRange(assignments);
+
+			_context.Instructor.Remove(instructor);
+			await _context.SaveChangesAsync();
+
+			return Ok(new { message = "Instructor removed successfully from database" });
 		}
 
 
