@@ -12,58 +12,25 @@ using System.Threading.Tasks;
 namespace EduTrackAcademics.Services
 
 {
-
-
-
-
     public class PerformanceService : IPerformanceService
 
     {
-
         private readonly IPerformanceRepository _repo;
         private readonly EduTrackAcademicsContext _context;
-
         public PerformanceService(EduTrackAcademicsContext context, IPerformanceRepository repo)
 
         {
-
             _repo = repo;
             _context = context;
-
         }
 
-        // ✅ COUNT
-
+        //count of the students
         public async Task<int> GetPerformanceCountAsync()
-
         {
-
             return await _repo.GetPerformanceCountAsync();
-
         }
 
-        // ✅ AVERAGE SCORE
-
-        //public async Task<EnrollmentAverageScoreDTO> GetAverageScoreAsync(string enrollmentId)
-
-        //{
-
-        //    if (string.IsNullOrEmpty(enrollmentId))
-
-        //        throw new BadRequestException("EnrollmentId is required");
-
-        //    var result = await _repo.GetAverageScoreAsync(enrollmentId);
-
-        //    if (result == null)
-
-        //        throw new NotFoundException("Enrollment not found");
-
-        //    return result;
-
-        //}
-
-        // ✅ LAST UPDATED
-
+        //Last Updated of the student details
         public async Task<LastUpdatedDTO> GetLastUpdatedAsync(string enrollmentId)
 
         {
@@ -82,8 +49,7 @@ namespace EduTrackAcademics.Services
 
         }
 
-        // ✅ INSTRUCTOR BATCHES
-
+        // Instrcutor assigned batches
         public async Task<List<InstructorBatchDTO>> GetInstructorBatchesAsync(string instructorId)
 
         {
@@ -102,8 +68,7 @@ namespace EduTrackAcademics.Services
 
         }
 
-        // ✅ BATCH REPORT
-
+        // Report for a batch
         public async Task<GetBatchReportDTO> GetBatchReportAsync(string batchId)
 
         {
@@ -116,12 +81,12 @@ namespace EduTrackAcademics.Services
 
             if (result == null)
 
-                //  throw new NotFoundException("Batch not found");
                 return null;
 
             return result;
 
         }
+        //get completion rate of the students in a batch
         public async Task<List<BatchCompletionDTO>> GetInstructorCompletionRate(string instructorId)
 
         {
@@ -148,109 +113,62 @@ namespace EduTrackAcademics.Services
 
         }
 
+        //get ongoing batches of the instructor
         public async Task<object> GetOngoingBatches(string instructorId)
-
         {
-
-            // 🔥 VALIDATION
-
             if (string.IsNullOrWhiteSpace(instructorId))
-
                 throw new ArgumentException("Instructor ID is required");
-
-            // 🔥 CHECK instructor exists
-
             var instructor = await _context.Instructor
-
                 .FirstOrDefaultAsync(i => i.InstructorId == instructorId);
-
             if (instructor == null)
-
                 throw new NotFoundException("Instructor not found");
-
             try
-
             {
-
                 var batches = await _repo.GetBatchesByInstructor(instructorId);
-
-                // 🔥 FILTER ONGOING
-
                 var ongoing = batches.Where(b => b.IsActive).ToList();
-
                 return new
-
                 {
-
                     count = ongoing.Count,
-
                     batchIds = ongoing.Select(b => b.BatchId).ToList()
-
                 };
-
             }
-
             catch (Exception ex)
-
             {
-
-                Console.WriteLine(ex.Message); // optional log
-
+                Console.WriteLine(ex.Message); 
                 throw new Exception("Error fetching ongoing batches");
-
             }
-
         }
+
+        //get all batches of the instructor
         public async Task<List<InstructorBatchDTO>> GetAllBatchesAsync()
-
         {
-
             try
-
             {
-
                 var result = await _repo.GetAllBatchesAsync();
-
-                // ✅ Validation
-
                 if (result == null || !result.Any())
-
                 {
-
                     throw new NotFoundException("No batches found");
-
                 }
-
                 return result;
-
             }
 
             catch (Exception ex)
-
             {
-
-                // optional: log error
-
                 throw new Exception("Error while fetching all batches: " + ex.Message);
-
             }
-
         }
+
+        //get count of the classess
         public async Task<List<BatchClassCountDTO>> GetBatchClassCountsByInstructor(string instructorId)
 
         {
 
-            // Step 1: Validation
 
             if (string.IsNullOrEmpty(instructorId))
 
                 throw new ArgumentException("Instructor ID is required");
 
-            // Step 2: Call repository
-
             var result = await _repo.GetBatchClassCountsByInstructor(instructorId);
-
-            // Step 3: Optional check
 
             if (result == null || result.Count == 0)
 
@@ -259,6 +177,8 @@ namespace EduTrackAcademics.Services
             return result;
 
         }
+
+        //get batch start dates and end dates
         public async Task<List<BatchStartDateDTO>> GetBatchStartDatesAsync()
 
         {
@@ -272,6 +192,8 @@ namespace EduTrackAcademics.Services
             return result;
 
         }
+
+        //delete student details
         public async Task DeleteStudentAsync(string enrollmentId)
 
         {
@@ -283,6 +205,8 @@ namespace EduTrackAcademics.Services
             await _repo.DeleteStudentAsync(enrollmentId);
 
         }
+
+        //update student details
         public async Task UpdateStudentAsync(UpdateStudentDTO dto)
 
         {
@@ -294,43 +218,43 @@ namespace EduTrackAcademics.Services
             await _repo.UpdateStudentAsync(dto);
 
         }
+
+
+        //generate performance for a batch
         public async Task GeneratePerformanceForBatch(string batchId)
         {
-            // ✅ VALIDATION
             if (string.IsNullOrWhiteSpace(batchId))
             {
                 throw new ArgumentException("BatchId cannot be null or empty");
             }
             try
             {
-                // 👉 Call repository
+               
                 await _repo.GeneratePerformanceForBatch(batchId);
             }
             catch (Exception ex)
             {
-                // ❗ LOG (optional)
-                // Console.WriteLine(ex.Message);
-                // ❗ THROW CUSTOM MESSAGE
-                //throw new Exception("Error while generating performance for batch", ex);
+                
                 return;
             }
         }
 
 
+        //get course dropout rate
         public async Task<double> GetCourseDropoutRateAsync(string courseId)
         {
             try
             {
-                // ✅ Validation
+                
                 if (string.IsNullOrWhiteSpace(courseId))
                     throw new ArgumentException("CourseId cannot be empty");
                 bool exists = await _context.Course
                     .AnyAsync(c => c.CourseId == courseId);
                 if (!exists)
                     throw new KeyNotFoundException($"Course {courseId} not found");
-                // ✅ Get data
+                
                 var rate = await _repo.GetCourseDropoutRateAsync(courseId);
-                // ✅ Logical check
+               
                 if (rate < 0 || rate > 100)
                     throw new Exception("Invalid dropout rate");
                 return rate;
@@ -340,17 +264,15 @@ namespace EduTrackAcademics.Services
                 throw new ApplicationException("Error while calculating course dropout rate", ex);
             }
         }
+
+        //get student assessment stats
         public async Task<List<StudentAssessmentStatsDTO>> GetStudentAssessmentStatsAsync(string studentId)
 
         {
 
-            // 🔹 Validation
-
             if (string.IsNullOrWhiteSpace(studentId))
 
                 throw new ArgumentException("StudentId is required");
-
-            // 🔹 Check student exists
 
             var studentExists = await _context.Student
 
@@ -359,8 +281,6 @@ namespace EduTrackAcademics.Services
             if (!studentExists)
 
                 throw new KeyNotFoundException($"Student not found: {studentId}");
-
-            // 🔹 Get ALL courseIds for that student
 
             var courseIds = await _context.Enrollment
 
@@ -375,8 +295,6 @@ namespace EduTrackAcademics.Services
             if (!courseIds.Any())
 
                 throw new Exception("Student not enrolled in any course");
-
-            // 🔹 Loop and collect stats
 
             var result = new List<StudentAssessmentStatsDTO>();
 

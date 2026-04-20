@@ -1,11 +1,8 @@
 using System.Text;
 using EduTrackAcademics.Aspects;
-
 using EduTrackAcademics.AuthFolder;
-
 using EduTrackAcademics.Data;
 using EduTrackAcademics.Dummy;
-
 using EduTrackAcademics.Model;
 using EduTrackAcademics.Repository;
 using EduTrackAcademics.Service;
@@ -19,13 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-
-
-
-
 var builder = WebApplication.CreateBuilder(args);
-
-
 
 builder.Services.AddDbContext<EduTrackAcademicsContext>(options =>
 options.UseSqlServer(
@@ -37,8 +28,10 @@ builder.Configuration.GetConnectionString("EduTrackAcademicsContext")
 ));
 
 
-builder.Services.AddControllers(); builder.Services.AddEndpointsApiExplorer(); 
-builder.Services.AddSwaggerGen(); builder.Services.AddHttpContextAccessor();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer(); 
+builder.Services.AddSwaggerGen();
+builder.Services.AddHttpContextAccessor();
 
 
 builder.Services.AddScoped<ICoordinatorDashboardRepo, CoordinatorDashboardRepo>();
@@ -84,8 +77,6 @@ builder.Services.AddScoped<IInstructorModuleRepository, InstructorModuleReposito
 builder.Services.AddScoped<IInstructorAttendanceService, InstructorAttendanceService>();
 builder.Services.AddScoped<IInstructorAttendanceRepository, InstructorAttendanceRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-
-
 
 // =======================// JWT Authentication// =======================
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -134,13 +125,10 @@ builder.Services.AddScoped<BatchCleanupService>();
 
 builder.Services.AddCors(options =>
 {
-
 	options.AddPolicy("MyCorsPolicy",
-
 	policy =>
 	{
-
-		policy.WithOrigins("http://localhost:5173")
+	   policy.WithOrigins("http://localhost:5173")
 
 	  .AllowAnyHeader()
 
@@ -148,8 +136,6 @@ builder.Services.AddCors(options =>
 
 
 	});
-
-
 });
 
 builder.Services.AddHangfire(config =>

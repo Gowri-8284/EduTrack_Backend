@@ -9,10 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace EduTrackAcademics.Data
 
 {
-
 	public class EduTrackAcademicsContext : DbContext
 	{
-
 		public EduTrackAcademicsContext(DbContextOptions<EduTrackAcademicsContext> options)
 
 		: base(options)
@@ -87,16 +85,18 @@ namespace EduTrackAcademics.Data
 			.HasForeignKey(p => p.QualificationId);
 
 			modelBuilder.Entity<Assessment>()
-	.HasOne(a => a.Course)
-	.WithMany(c => c.Assessments)
-	.HasForeignKey(a => a.CourseId);
-			modelBuilder.Entity<StudentBatchAssignment>()
-.HasKey(sba => new { sba.BatchId, sba.StudentId });
+	        .HasOne(a => a.Course)
+	         .WithMany(c => c.Assessments)
+	         .HasForeignKey(a => a.CourseId);
 
-modelBuilder.Entity<StudentBatchAssignment>()
-	.HasOne(sba => sba.CourseBatch)
-	.WithMany(cb => cb.StudentBatchAssignments)
-	.HasForeignKey(sba => sba.BatchId);
+			modelBuilder.Entity<StudentBatchAssignment>()
+            .HasKey(sba => new { sba.BatchId, sba.StudentId });
+
+              modelBuilder.Entity<StudentBatchAssignment>()
+            	.HasOne(sba => sba.CourseBatch)
+             	.WithMany(cb => cb.StudentBatchAssignments)
+	            .HasForeignKey(sba => sba.BatchId);
+
 			modelBuilder.Entity<StudentBatchAssignment>()
 				.HasOne(sba => sba.Student)
 				.WithMany();
@@ -167,18 +167,15 @@ modelBuilder.Entity<StudentBatchAssignment>()
 				.HasOne(a => a.Course)
 				.WithMany(c => c.Assessments)
 				.HasForeignKey(a => a.CourseId);
-			modelBuilder.Entity<BatchConfig>()
-.HasKey(b => b.CourseId);
 
 			modelBuilder.Entity<BatchConfig>()
+            .HasKey(b => b.CourseId);
 
+			modelBuilder.Entity<BatchConfig>()
 			.HasKey(b => b.CourseId);
 
-
 			modelBuilder.Entity<BatchConfig>()
-
 			.HasKey(b => b.CourseId);
-
 
 			string adminHashedPassword = "$2a$12$zQYc9Zkz5PxyDZ0GmJ3q6Oc0Q4r1Uju9rG0q3JcPlzLzF8qfGZpMe";
 	
@@ -196,12 +193,8 @@ modelBuilder.Entity<StudentBatchAssignment>()
 		public DbSet<BatchConfig> BatchConfigs { get; set; }
 		public DbSet<EduTrackAcademics.Model.Enrollment> Enrollment { get; set; } = default!;
 		public DbSet<EduTrackAcademics.Model.StudentProgress> StudentProgress { get; set; } = default!;
-
-
-		public DbSet<EduTrackAcademics.Model.StudentAnswer> StudentAnswer { get; set; } = default!;
-
+        public DbSet<EduTrackAcademics.Model.StudentAnswer> StudentAnswer { get; set; } = default!;
 		public DbSet<EduTrackAcademics.Model.AcademicReport> AcademicReport { get; set; }
-
 		public DbSet<AcademicRule> AcademicRules { get; set; }
 
 	}
