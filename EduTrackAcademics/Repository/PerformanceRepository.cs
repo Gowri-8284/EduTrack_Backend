@@ -1,53 +1,30 @@
-﻿
-
-using EduTrackAcademics.Data;
-
+﻿using EduTrackAcademics.Data;
 using EduTrackAcademics.DTO;
-
-
-
 using EduTrackAcademics.Model;
 using EduTrackAcademics.Services;
 using Microsoft.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-
-
-
 namespace EduTrackAcademics.Repository
 
 {
-
     public class PerformanceRepository : IPerformanceRepository
 
     {
-
         private readonly EduTrackAcademicsContext _context;
-
-
         public PerformanceRepository(EduTrackAcademicsContext context)
-
         {
-
             _context = context;
-
-        }
-
-        // ✅ COUNT
+        } 
 
         public async Task<int> GetPerformanceCountAsync()
 
         {
-
             return await _context.Performances.CountAsync();
-
         }
 
-
         private async Task<string> GenerateProgressId()
-
         {
-
             var lastId = await _context.Performances
 
                 .OrderByDescending(p => p.ProgressID)
@@ -66,34 +43,23 @@ namespace EduTrackAcademics.Repository
 
         }
 
-        // ✅ ADD
-
         public async Task AddPerformanceAsync(Performance performance)
-
         {
-
             await _context.Performances.AddAsync(performance);
 
             await _context.SaveChangesAsync();
 
         }
 
-        // ✅ GET LAST
-
         public async Task<Performance?> GetLastPerformanceAsync()
-
         {
-
             return await _context.Performances
 
                 .OrderByDescending(p => p.LastUpdated)
 
                 .FirstOrDefaultAsync();
 
-        }
-
-        // ✅ CONTENT %
-
+        } 
         public async Task<double> GetCourseProgressPercentageAsync(string studentId, string courseId)
 
         {
@@ -140,10 +106,9 @@ namespace EduTrackAcademics.Repository
 
         }
 
-        // ✅ LAST UPDATED (IST)
-
+        //get last modified date for a student enrollment
         public async Task<LastUpdatedDTO> GetLastModifiedDateAsync(string enrollmentId)
-
+         
         {
 
             var data = await _context.Performances
@@ -179,9 +144,6 @@ namespace EduTrackAcademics.Repository
                 };
 
             }
-
-            // ✅ IST conversion
-
             var ist = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
             var time = TimeZoneInfo.ConvertTimeFromUtc(data.LastUpdated, ist);
@@ -208,9 +170,7 @@ namespace EduTrackAcademics.Repository
 
         }
 
-
-        // ✅ INSTRUCTOR BATCHES
-
+        //get batches assigned to an instructor with course and student count details
         public async Task<List<InstructorBatchDTO>> GetInstructorBatchesAsync(string instructorId)
 
         {
@@ -219,7 +179,7 @@ namespace EduTrackAcademics.Repository
 
                 .Include(cb => cb.Course)
 
-                .Include(cb => cb.Instructor) // 🔥 IMPORTANT
+                .Include(cb => cb.Instructor) 
 
                 .Where(cb => cb.InstructorId == instructorId)
 
@@ -243,8 +203,6 @@ namespace EduTrackAcademics.Repository
 
     InstructorPhone = cb.Instructor.InstructorPhone,
 
-    // 🔥 NEW FIELDS
-
     IsActive = cb.IsActive,
 
     StartDate = cb.LastFilledDate,
@@ -260,16 +218,10 @@ namespace EduTrackAcademics.Repository
                 .ToListAsync();
 
         }
-
-
-        //// ✅ BATCH REPORT (FULL 🔥)
-
-
+        //get batch performance report with student details, average score, attendance, completion percentage, top performer etc.
         public async Task<GetBatchReportDTO> GetBatchPerformanceAsync(string batchId)
 
         {
-
-            // 🔹 Get Batch
 
             var batch = await _context.CourseBatches
 
@@ -283,8 +235,6 @@ namespace EduTrackAcademics.Repository
 
                 return null;
 
-            // 🔹 Get Enrollments (by CourseId)
-
             var enrollments = await _context.Enrollment
 
                 .Include(e => e.Student)
@@ -292,8 +242,6 @@ namespace EduTrackAcademics.Repository
                 .Where(e => e.CourseId == batch.CourseId)
 
                 .ToListAsync();
-
-            // 🔹 Remove duplicates
 
             var uniqueEnrollments = enrollments
 
@@ -309,7 +257,6 @@ namespace EduTrackAcademics.Repository
 
             {
 
-                // 🔹 Submissions
 
                 var submissions = await _context.Submission
 
@@ -327,15 +274,7 @@ namespace EduTrackAcademics.Repository
 
                     .FirstOrDefault();
 
-
-
-                // 🔥 IMPORTANT FIX → completion calculation
-
                 var completion = await GetCourseProgressPercentageAsync(e.StudentId, batch.CourseId);
-
-
-
-                // 🔹 Attendance
 
                 var totalClasses = await _context.Attendances
 
@@ -381,7 +320,7 @@ namespace EduTrackAcademics.Repository
 
                         : (decimal)submissions.Average(s => s.Score),
 
-                    CompletionPercentage = completion, // ✅ FIXED
+                    CompletionPercentage = completion, 
 
                     AttendancePercentage = attendancePercentage,
 
@@ -394,8 +333,6 @@ namespace EduTrackAcademics.Repository
                 });
 
             }
-
-            // 🔹 Batch Calculations
 
             decimal batchAvgScore = students.Count == 0
 
@@ -433,8 +370,6 @@ namespace EduTrackAcademics.Repository
 
                 .FirstOrDefault();
 
-            // 🔹 Final DTO
-
             return new GetBatchReportDTO
 
             {
@@ -469,7 +404,7 @@ namespace EduTrackAcademics.Repository
 
         }
 
-
+        //get batch completion percentage for each batch of an instructor
         public async Task<List<BatchCompletionDTO>> GetBatchCompletionByInstructor(string instructorId)
 
         {
@@ -528,7 +463,7 @@ namespace EduTrackAcademics.Repository
 
         }
 
-
+        //get all batches of an instructor with course 
         public async Task<List<CourseBatch>> GetBatchesByInstructor(string instructorId)
 
         {
@@ -541,6 +476,7 @@ namespace EduTrackAcademics.Repository
 
         }
 
+        //get all batches 
         public async Task<List<InstructorBatchDTO>> GetAllBatchesAsync()
 
         {
@@ -587,13 +523,12 @@ namespace EduTrackAcademics.Repository
 
         }
 
+        //get total class count 
         public async Task<List<BatchClassCountDTO>> GetBatchClassCountsByInstructor(string instructorId)
 
         {
 
             var result = new List<BatchClassCountDTO>();
-
-            // Step 1: Get all batches of instructor
 
             var batches = await _context.CourseBatches
 
@@ -601,13 +536,9 @@ namespace EduTrackAcademics.Repository
 
                 .ToListAsync();
 
-            // Step 2: Loop each batch
-
             foreach (var batch in batches)
 
             {
-
-                // Step 3: Count total classes (distinct dates)
 
                 var totalClasses = await _context.Attendances
 
@@ -618,8 +549,6 @@ namespace EduTrackAcademics.Repository
                     .Distinct()
 
                     .CountAsync();
-
-                // Step 4: Add to result
 
                 result.Add(new BatchClassCountDTO
 
@@ -636,7 +565,7 @@ namespace EduTrackAcademics.Repository
             return result;
 
         }
-
+        //get batch start and end dates based on last filled date and course duration
         public async Task<List<BatchStartDateDTO>> GetBatchStartDatesAsync()
 
         {
@@ -657,12 +586,13 @@ namespace EduTrackAcademics.Repository
 
                 })
 
-                .OrderBy(b => b.StartDate) // sorting here itself
+                .OrderBy(b => b.StartDate) 
 
                 .ToListAsync();
 
         }
 
+        
         public async Task DeleteStudentAsync(string enrollmentId)
 
         {
@@ -695,27 +625,21 @@ namespace EduTrackAcademics.Repository
 
                 throw new Exception("Student not found");
 
-            // Update student name
+          
 
             enrollment.Student.StudentName = dto.StudentName;
 
-            // Optional (if course editable)
+           
 
             enrollment.CourseId = dto.CourseId;
 
             await _context.SaveChangesAsync();
 
         }
-
-
-
-        //------------------------------
-
+//get batch details
         public async Task GeneratePerformanceForBatch(string batchId)
 
         {
-
-            // ✅ Get Batch
 
             var batch = await _context.CourseBatches
 
@@ -725,7 +649,6 @@ namespace EduTrackAcademics.Repository
 
                 throw new Exception("Batch not found");
 
-            // ✅ Get Enrollments (Course based)
 
             var enrollments = await _context.Enrollment
 
@@ -745,23 +668,17 @@ namespace EduTrackAcademics.Repository
 
             {
 
-                // ✅ Get submissions
-
                 var submissions = await _context.Submission
 
                     .Where(s => s.StudentID == enrollment.StudentId)
 
                     .ToListAsync();
 
-                // ✅ Avg Score
-
                 decimal avgScore = submissions.Any()
 
                     ? submissions.Average(s => (decimal)s.Score)
 
                     : 0;
-
-                // ✅ Completion %
 
                 double completion = await GetCourseProgressPercentageAsync(
 
@@ -770,8 +687,6 @@ namespace EduTrackAcademics.Repository
                     enrollment.CourseId);
 
                 decimal finalCompletion = Math.Round((decimal)completion, 2);
-
-                // ✅ Check existing
 
                 var existing = await _context.Performances
 
@@ -793,7 +708,6 @@ namespace EduTrackAcademics.Repository
 
                 {
 
-                    // 🔥 Simple safe ID generation
 
                     var count = await _context.Performances.CountAsync();
 
@@ -822,8 +736,6 @@ namespace EduTrackAcademics.Repository
                     });
 
                 }
-
-                // 🔥 IMPORTANT (SAVE EACH TIME)
 
                 await _context.SaveChangesAsync();
 
@@ -872,15 +784,11 @@ namespace EduTrackAcademics.Repository
 
         {
 
-            // Total assessments in that course
-
             var total = await _context.Assessments
 
                 .Where(a => a.CourseId == courseId)
 
                 .CountAsync();
-
-            // Submitted assessments by student for that course
 
             var submitted = await (
 
@@ -900,7 +808,7 @@ namespace EduTrackAcademics.Repository
 
             {
 
-                CourseId = courseId,   // 🔥 IMPORTANT
+                CourseId = courseId, 
 
                 TotalAssessments = total,
 
